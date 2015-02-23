@@ -1,0 +1,11 @@
+src/sdk/cvar.o
+src/cvarhook.o
+src/debug.o
+src/ifs.o
+src/main.o
+src/sigscan.o
+.cproject
+.project
+.settings
+libskimbot.so
+src/sourceutil.o
