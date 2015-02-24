@@ -10,6 +10,7 @@
 #include "debug.h"
 #include "const.h"
 #include "sourceutil.h"
+#include "netvar.h"
 
 extern "C" void libmain()
 {
@@ -19,5 +20,12 @@ extern "C" void libmain()
 	skim::cvar_hook::init();
 
 	skim::con(NAME "Loaded");
+
+	skim::window("Loaded");
+
+	// Test netvars
+	new ConCommand("zimbabwe", [](const CCommand& a){
+		skim::con(std::to_string(skim::netvar::netoffset(a.Arg(1), a.Arg(2))));
+	});
 	return;
 }

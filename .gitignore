@@ -9,3 +9,4 @@ src/sigscan.o
 .settings
 libskimbot.so
 src/sourceutil.o
+src/netvar.o
