@@ -233,7 +233,7 @@ public:
 #ifdef POSIX
 	// AR: Same as above win32 defn but down here at the end of the vtable for back compat
 	// 70
-	virtual void			StartStatsReporting( HANDLE handle, bool bArbitrated ) = 0;
+	virtual void			StartStatsReporting( void* handle, bool bArbitrated ) = 0;
 #endif
 
 	// Let the client handle UI toggle - if this function returns false, the UI will toggle, otherwise it will not.
@@ -264,6 +264,4 @@ public:
 	virtual bool IsConnectedUserInfoChangeAllowed( IConVar *pCvar ) = 0;
 };
 
-
-};
 #endif /* CLIENT_H_ */

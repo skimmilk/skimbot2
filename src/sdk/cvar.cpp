@@ -173,6 +173,11 @@ void ConVar::Create(const char*, const char*, int, const char*,
 		bool, float, bool, float, FnChangeCallback_t)
 {}
 
+ConCommand::ConCommand(const char *pName, FnCommandCallbackVoid_t callback,
+		const char *pHelpString, int flags, FnCommandCompletionCallback completionFunc)
+	: ConCommandBase(pName, pHelpString, flags),
+	m_fnCommandCallbackV1(callback), m_fnCompletionCallback(completionFunc)
+{}
 ConCommand::ConCommand(const char *pName, FnCommandCallback_t callback,
 		const char *pHelpString, int flags, FnCommandCompletionCallback completionFunc)
 	: ConCommandBase(pName, pHelpString, flags),

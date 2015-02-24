@@ -59,6 +59,7 @@ typedef struct player_info_s
 } player_info_t;
 
 typedef unsigned int uint32;
+typedef unsigned int uint;
 struct model_t;
 class SurfInfo;
 class CAudioSource;

@@ -63,6 +63,7 @@ typedef void (*ArrayLengthRecvProxyFn)( void *pStruct, int objectID, int current
 // If the parent object points at the child object, you need to dereference the pointer here.
 // NOTE: don't ever return null from a DataTable receive proxy function. Bad things will happen.
 typedef void (*DataTableRecvVarProxyFn)(const RecvProp *pProp, void **pOut, void *pData, int objectID);
+class RecvTable;
 
 class RecvProp
 {
@@ -114,6 +115,21 @@ public:
 	// Originally private
 	bool			m_bInitialized;
 	bool			m_bInMainList;
+};
+
+class IClientNetworkable;
+typedef IClientNetworkable* (*CreateClientClassFn)( int entnum, int serialNum );
+typedef IClientNetworkable* (*CreateEventFn)();
+
+class ClientClass
+{
+public:
+	CreateClientClassFn m_pCreateFn;
+	CreateEventFn m_pCreateEventFn; // Only called for event objects.
+	const char	*m_pNetworkName;
+	RecvTable *m_pRecvTable;
+	ClientClass *m_pNext;
+	int	m_ClassID; // Managed by the engine.
 };
 
 #endif /* RECV_H_ */
