@@ -10,3 +10,4 @@ src/sigscan.o
 libskimbot.so
 src/sourceutil.o
 src/netvar.o
+src/vthook.o

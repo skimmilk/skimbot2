@@ -88,30 +88,6 @@ static std::vector<sigpoint> convert_signature(const std::string& pattern)
 	return result;
 }
 
-// hmod is not a module handle on linux, but a ptr to a function inside the module. It is later changed to the module handle.
-void* SigScan(const std::string& lib, const char* pat, unsigned int len )
-{
-	exe_region region = baseof(getpid(), lib);
-
-	// Find module end
-	const unsigned char* end = region.begin + region.length - len;
-
-	// Scan for signature
-	for ( const unsigned char* p = region.begin; p<=end; ++p )
-	{
-		unsigned int i = 0;
-		do
-		{
-			if ( (p[i]!=pat[i] ))
-					goto cont;
-		}
-		while ( ++i<len );
-		return (void*)p;
-		cont:;
-	}
-
-	return NULL;
-}
 void* sigscan(const std::string& libname, const std::string& pattern)
 {
 	exe_region region = baseof(getpid(), libname);
