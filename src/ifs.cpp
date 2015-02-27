@@ -62,34 +62,9 @@ static void* waitfor(const char* directory)
 	return result;
 }
 #define CHK(f, v, s) if (!set(f, v, s) && !window("Failed to acquire " s ", continue?")) return false;
-bool ifs::load()
+
+static bool load_steam(CreateInterfaceFn interface_factory)
 {
-	// Get the AppSystem interface function, in engine.so
-	// The string VGUI_InputInternal001 will get you this sig
-	long** offset = (long**)skim::sigscan("engine.so",
-			"55  89 E5  83 EC 28  89 75 F8  8B 75 08"
-			"89 7D FC  8B 7D 0C  89 5D F4  89 34 24  89 7C 24 04");
-
-	CreateInterfaceFn interface_factory = **(CreateInterfaceFn**)( (char*)offset + 30);
-
-	CHK(interface_factory, ifs::cvar, "VEngineCvar004")
-	CHK(interface_factory, ifs::event, "GAMEEVENTSMANAGER002");
-	CHK(interface_factory, ifs::materials, "VMaterialSystem080");
-	CHK(interface_factory, ifs::engine, "VEngineClient014");
-	CHK(interface_factory, ifs::vgui, "VEngineVGui001");
-	CHK(interface_factory, ifs::model_info, "VModelInfoClient006");
-	CHK(interface_factory, ifs::model_render, "VEngineModel016");
-	CHK(interface_factory, ifs::overlay, "VDebugOverlay003");
-	CHK(interface_factory, ifs::render_view, "VEngineRenderView014");
-	CHK(interface_factory, ifs::tracer, "EngineTraceClient003");
-	//CHK(interface_factory, ifs::prediction, "VClientPrediction001");
-
-	CHK(interface_factory, ifs::panel, "VGUI_Panel009");
-
-	//CHK(interface_factory, ifs::surface, "VGUI_Surface034");
-
-	CHK(interface_factory, ifs::studio_render, "VStudioRender025");
-
 	if (false && window("Open steam?"))
 	{
 		// Open up steam
@@ -106,12 +81,12 @@ bool ifs::load()
 		window("Opening steam friends");
 		ifs::steam_friends = ifs::steam_client->GetISteamFriends(user, pipe,
 				"STEAMUSERSTATS_INTERFACE_VERSION014");
-		if (!steam_friends) window("Could not get steam friends interface");
+		if (!ifs::steam_friends) window("Could not get steam friends interface");
 	}
-
-	// The client library takes a while to load
-	std::string directory (ifs::engine->GetGameDirectory());
-	directory += "/bin/client.so";
+	return true;
+}
+static bool load_client(const std::string& directory)
+{
 	void* client_handle = waitfor(directory.c_str());
 	if (!client_handle)
 	{
@@ -123,22 +98,38 @@ bool ifs::load()
 	CHK(client_factory, ifs::client, "VClient017");
 	CHK(client_factory, ifs::entities, "VClientEntityList003");
 
+	return true;
+}
+static bool load_gameres(const std::string& directory)
+{
 	window("Getting offsets n stuff");
 	// The string MVMLocalPlayerUpgradesClear will get you here
 	char*  p = (char*)sigscan(directory, "A1 xx xx xx xx  55 89 E5 85 C0 74 0C");
 	if (p)
 		ifs::resources = (IGameResources* (*)())p;
 	else
+	{
 		window("Failed to acquire game resources");
-
+		return false;
+	}
+	return true;
+}
+static bool load_getplayer(const std::string& directory)
+{
 	// CasualX openplugin
-	p = (char*)sigscan(directory, "55  89 E5  83 EC 18  E8 !! !! !! !!  89 C2  31 C0  85 D2  74 11");
+	char* p = (char*)sigscan(directory, "55  89 E5  83 EC 18  E8 !! !! !! !!  89 C2  31 C0  85 D2  74 11");
 	if (p)
 		// IsLocalPlayer()
 		ifs::player = (IClientEntity* (*)())(*(unsigned int*)(p + 7) + (unsigned int)p + 0xB);
 	else
+	{
 		window("Failed to acquire local player");
-
+		return false;
+	}
+	return true;
+}
+static bool load_input()
+{
 	window("Grabbing IBaseClientDll vmt");
 	// Client::CreateMove + 61 = location of IInput
 	// Get the vtable of ifs::client
@@ -155,9 +146,52 @@ bool ifs::load()
 	window("Testing dereference to IInput vmt");
 	long* vmt = *(long**)ifs::input;
 	window("Success");
-		// Get first function pointer
-		long* testvmt = *(long**)vmt;
-		window("Can still dereference more! " + std::to_string((long)testvmt));
+	// Get first function pointer
+	long* testvmt = *(long**)vmt;
+	window("Can still dereference more! " + std::to_string((long)testvmt));
+
+	return true;
+}
+
+bool ifs::load()
+{
+	// Get the AppSystem interface function, in engine.so
+	// The string VGUI_InputInternal001 will get you this sig
+	long** offset = (long**)skim::sigscan("engine.so",
+			"55  89 E5  83 EC 28  89 75 F8  8B 75 08"
+			"89 7D FC  8B 7D 0C  89 5D F4  89 34 24  89 7C 24 04");
+
+	CreateInterfaceFn interface_factory = **(CreateInterfaceFn**)((char*)offset + 30);
+
+	CHK(interface_factory, ifs::cvar, "VEngineCvar004")
+	CHK(interface_factory, ifs::event, "GAMEEVENTSMANAGER002");
+	CHK(interface_factory, ifs::materials, "VMaterialSystem080");
+	CHK(interface_factory, ifs::engine, "VEngineClient014");
+	CHK(interface_factory, ifs::vgui, "VEngineVGui001");
+	CHK(interface_factory, ifs::model_info, "VModelInfoClient006");
+	CHK(interface_factory, ifs::model_render, "VEngineModel016");
+	CHK(interface_factory, ifs::overlay, "VDebugOverlay003");
+	CHK(interface_factory, ifs::render_view, "VEngineRenderView014");
+	CHK(interface_factory, ifs::tracer, "EngineTraceClient003");
+	//CHK(interface_factory, ifs::prediction, "VClientPrediction001");
+
+	CHK(interface_factory, ifs::panel, "VGUI_Panel009");
+	//CHK(interface_factory, ifs::surface, "VGUI_Surface034");
+	CHK(interface_factory, ifs::studio_render, "VStudioRender025");
+
+	if (!load_steam(interface_factory))
+		return false;
+
+	// The client library takes a while to load
+	std::string directory (ifs::engine->GetGameDirectory());
+	directory += "/bin/client.so";
+
+	if (!load_client(directory) ||
+			!load_gameres(directory) ||
+			!load_getplayer(directory) ||
+			!load_input())
+		return false;
+
 	return true;
 }
 } /* namespace skim */
