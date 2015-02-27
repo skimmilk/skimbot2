@@ -141,7 +141,7 @@ static bool load_input()
 
 	window("Grabbing pointer to IInput");
 	// Get the pointer to IInput
-	ifs::input = *(IInput**)((char*)createmovefn + 61);
+	ifs::input = **(IInput***)((char*)createmovefn + 61);
 
 	window("Testing dereference to IInput vmt");
 	long* vmt = *(long**)ifs::input;
