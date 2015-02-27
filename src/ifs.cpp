@@ -130,26 +130,35 @@ static bool load_getplayer(const std::string& directory)
 }
 static bool load_input()
 {
-	window("Grabbing IBaseClientDll vmt");
 	// Client::CreateMove + 61 = location of IInput
 	// Get the vtable of ifs::client
 	long* client_vmt = *(long**)ifs::client;
 
-	window("Grabbing IBaseClientDll::CreateMove() method pointer");
 	// Get the function pointer of client->CreateMove
 	long* createmovefn = (long*)client_vmt[21];
 
-	window("Grabbing pointer to IInput");
 	// Get the pointer to IInput
 	ifs::input = **(IInput***)((char*)createmovefn + 61);
 
-	window("Testing dereference to IInput vmt");
-	long* vmt = *(long**)ifs::input;
-	window("Success");
-	// Get first function pointer
-	long* testvmt = *(long**)vmt;
-	window("Can still dereference more! " + std::to_string((long)testvmt));
+	return true;
+}
+static bool load_surface(const std::string& directory)
+{
+	// CClientReplayImp::PlaySound() references ISurface
+	// CClientReplayImp can be found with the string "cancelled" in client.so
+	// cdll_replay.cpp
+	char* offset = (char*)skim::sigscan(directory,
+			"A1 !! !! !! !!  55  89 E5  85 C0  74 14  8B 08  89 45 08  5D  8B 81 38 01 00 00");
+	if (!offset)
+	{
+		window("Could not locate CClientReplayImp::PlaySound()");
+		return false;
+	}
+	window("Found PlaySound()");
+	offset++;
 
+	ifs::surface = **(ISurface***)offset;
+	window("Got surface");
 	return true;
 }
 
@@ -189,7 +198,8 @@ bool ifs::load()
 	if (!load_client(directory) ||
 			!load_gameres(directory) ||
 			!load_getplayer(directory) ||
-			!load_input())
+			!load_input() ||
+			!load_surface(directory))
 		return false;
 
 	return true;
