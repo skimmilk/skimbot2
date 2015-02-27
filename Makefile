@@ -10,7 +10,8 @@ SOURCES=src/main.cpp\
 	src/debug.cpp\
 	src/sdk/cvar.cpp\
 	src/netvar.cpp\
-	src/vthook.cpp
+	src/vthook.cpp\
+	src/sdk/crc.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 HACK=libskimbot.so
 
