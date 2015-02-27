@@ -102,11 +102,11 @@ static bool load_client(const std::string& directory)
 }
 static bool load_gameres(const std::string& directory)
 {
-	window("Getting offsets n stuff");
-	// The string MVMLocalPlayerUpgradesClear will get you here
-	char*  p = (char*)sigscan(directory, "A1 xx xx xx xx  55 89 E5 85 C0 74 0C");
+	// The string 'deaths' and 'frags' will get you here
+	// Lands you in GameResources()
+	char*  p = (char*)sigscan(directory, "55  89 E5  85 C0  74 0C  05 3C 05 00 00  5D  C3");
 	if (p)
-		ifs::resources = (IGameResources* (*)())p;
+		ifs::resources = (IGameResources* (*)())(p - 5);
 	else
 	{
 		window("Failed to acquire game resources");
@@ -116,11 +116,10 @@ static bool load_gameres(const std::string& directory)
 }
 static bool load_getplayer(const std::string& directory)
 {
-	// CasualX openplugin
-	char* p = (char*)sigscan(directory, "55  89 E5  83 EC 18  E8 !! !! !! !!  89 C2  31 C0  85 D2  74 11");
+	// The string Player.WeaponSelectionClose will get you here
+	char* p = (char*)sigscan(directory, "85 C0  89 C6  74 21  8B 03  89 1C 24  FF 50 28");
 	if (p)
-		// IsLocalPlayer()
-		ifs::player = (IClientEntity* (*)())(*(unsigned int*)(p + 7) + (unsigned int)p + 0xB);
+		ifs::player = (IClientEntity* (*)())(*(long*)(p - 4));
 	else
 	{
 		window("Failed to acquire local player");
@@ -148,17 +147,14 @@ static bool load_surface(const std::string& directory)
 	// CClientReplayImp can be found with the string "cancelled" in client.so
 	// cdll_replay.cpp
 	char* offset = (char*)skim::sigscan(directory,
-			"A1 !! !! !! !!  55  89 E5  85 C0  74 14  8B 08  89 45 08  5D  8B 81 38 01 00 00");
+			"55  89 E5  85 C0  74 14  8B 08  89 45 08  5D  8B 81 38 01 00 00");
 	if (!offset)
 	{
 		window("Could not locate CClientReplayImp::PlaySound()");
 		return false;
 	}
-	window("Found PlaySound()");
-	offset++;
 
-	ifs::surface = **(ISurface***)offset;
-	window("Got surface");
+	ifs::surface = **(ISurface***)(offset - 4);
 	return true;
 }
 
