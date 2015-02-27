@@ -139,7 +139,25 @@ bool ifs::load()
 	else
 		window("Failed to acquire local player");
 
+	window("Grabbing IBaseClientDll vmt");
+	// Client::CreateMove + 61 = location of IInput
+	// Get the vtable of ifs::client
+	long* client_vmt = *(long**)ifs::client;
 
+	window("Grabbing IBaseClientDll::CreateMove() method pointer");
+	// Get the function pointer of client->CreateMove
+	long* createmovefn = (long*)client_vmt[21];
+
+	window("Grabbing pointer to IInput");
+	// Get the pointer to IInput
+	ifs::input = *(IInput**)((char*)createmovefn + 61);
+
+	window("Testing dereference to IInput vmt");
+	long* vmt = *(long**)ifs::input;
+	window("Success");
+		// Get first function pointer
+		long* testvmt = *(long**)vmt;
+		window("Can still dereference more! " + std::to_string((long)testvmt));
 	return true;
 }
 } /* namespace skim */
