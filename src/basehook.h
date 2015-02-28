@@ -21,6 +21,7 @@ typedef void (*paint_fn)();
 
 class basehook
 {
+public:
 	static void init();
 	static void unload();
 

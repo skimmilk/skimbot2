@@ -30,7 +30,6 @@ typedef unsigned long HScheme;
 class IPanel : public IBaseInterface
 {
 public:
-	// 1
 	virtual void Init(VPANEL vguiPanel, IClientPanel *panel) = 0;
 
 	// methods
@@ -43,8 +42,8 @@ public:
 	virtual void SetZPos(VPANEL vguiPanel, int z) = 0;
 	virtual int  GetZPos(VPANEL vguiPanel) = 0;
 
-	// 10
 	virtual void GetAbsPos(VPANEL vguiPanel, int &x, int &y) = 0;
+	// 10
 	virtual void GetClipRect(VPANEL vguiPanel, int &x0, int &y0, int &x1, int &y1) = 0;
 	virtual void SetInset(VPANEL vguiPanel, int left, int top, int right, int bottom) = 0;
 	virtual void GetInset(VPANEL vguiPanel, int &left, int &top, int &right, int &bottom) = 0;
@@ -55,8 +54,8 @@ public:
 	virtual int GetChildCount(VPANEL vguiPanel) = 0;
 	virtual VPANEL GetChild(VPANEL vguiPanel, int index) = 0;
 	virtual /*CUtlVector< VPANEL > &*/ void* GetChildren( VPANEL vguiPanel ) = 0;
-	// 20
 	virtual VPANEL GetParent(VPANEL vguiPanel) = 0;
+	// 20
 	virtual void MoveToFront(VPANEL vguiPanel) = 0;
 	virtual void MoveToBack(VPANEL vguiPanel) = 0;
 	virtual bool HasParent(VPANEL vguiPanel, VPANEL potentialParent) = 0;
@@ -71,10 +70,10 @@ public:
 	// returns true if auto-deletion flag is set
 	virtual bool IsAutoDeleteSet(VPANEL vguiPanel) = 0;
 	// deletes the Panel * associated with the vpanel
-	// 30
 	virtual void DeletePanel(VPANEL vguiPanel) = 0;
 
 	// input interest
+	// 30
 	virtual void SetKeyBoardInputEnabled(VPANEL vguiPanel, bool state) = 0;
 	virtual void SetMouseInputEnabled(VPANEL vguiPanel, bool state) = 0;
 	virtual bool IsKeyBoardInputEnabled(VPANEL vguiPanel) = 0;
@@ -92,8 +91,8 @@ public:
 
 	// these pass through to the IClientPanel
 	virtual void Think(VPANEL vguiPanel) = 0;
-	// 40
 	virtual void PerformApplySchemeSettings(VPANEL vguiPanel) = 0;
+	// 40
 	virtual void PaintTraverse(VPANEL vguiPanel, bool forceRepaint, bool allowForce = true) = 0;
 	virtual void Repaint(VPANEL vguiPanel) = 0;
 	virtual VPANEL IsWithinTraverse(VPANEL vguiPanel, int x, int y, bool traversePopups) = 0;
@@ -105,6 +104,7 @@ public:
 	virtual void RequestFocus(VPANEL vguiPanel, int direction = 0) = 0;
 	virtual bool RequestFocusPrev(VPANEL vguiPanel, VPANEL existingPanel) = 0;
 	virtual bool RequestFocusNext(VPANEL vguiPanel, VPANEL existingPanel) = 0;
+	// 50
 	virtual VPANEL GetCurrentKeyFocus(VPANEL vguiPanel) = 0;
 	virtual int GetTabPosition(VPANEL vguiPanel) = 0;
 
@@ -125,8 +125,8 @@ public:
 	virtual void SetTopmostPopup( VPANEL vguiPanel, bool state ) = 0;
 
 	// sibling pins
+	// 59
 	virtual void SetSiblingPin(VPANEL vguiPanel, VPANEL newSibling, char iMyCornerToPin = 0, char iSiblingCornerToPinTo = 0 ) = 0;
-
 };
 
 #endif /* PANEL_H_ */

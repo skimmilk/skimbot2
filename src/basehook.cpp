@@ -16,7 +16,6 @@
 #include "sdk/client.h"
 #include "sdk/engine.h"
 #include "sdk/panel.h"
-#include "sdk/usercmd.h"
 #include "sdk/input.h"
 
 namespace skim
@@ -68,10 +67,11 @@ void basehook::post_paint(paint_fn a, const std::string& hackname)
 	paint_hacks.push_back({a, hackname});
 }
 
-vthook<200> createmove_hook;
-vthook<200> paint_hook;
+// Each class has around 70 virtual methods, add a few to stay safe
+vthook<100> createmove_hook;
+vthook<100> paint_hook;
 
-void hooked_createmove(int seq_num, float frametime, bool active)
+static void hooked_createmove(IBaseClientDLL* thisptr, int seq_num, float frametime, bool active)
 {
 	static int first;
 	if (first++ == 0)
@@ -81,7 +81,7 @@ void hooked_createmove(int seq_num, float frametime, bool active)
 		runhacks(premove_hacks, "pre-CreateMove", seq_num, frametime, active);
 
 	createmove_hook.unhook();
-	ifs::client->CreateMove(seq_num, frametime, active);
+	thisptr->CreateMove(seq_num, frametime, active);
 	createmove_hook.rehook();
 
 	// Grab the command
@@ -97,19 +97,17 @@ void hooked_createmove(int seq_num, float frametime, bool active)
 	verified.m_crc = cmd->GetChecksum();
 }
 
-void hooked_paint(VPANEL vpanel, bool repaint, bool force)
+static void hooked_paint(IPanel* thisptr, VPANEL vpanel, bool repaint, bool force)
 {
+	static unsigned long first;
+	if (first++ == 0)
+			dcon(NAME "Hooked PaintTraverse");
+
 	paint_hook.unhook();
-	ifs::panel->PaintTraverse(vpanel, repaint, force);
+	thisptr->PaintTraverse(vpanel, repaint, force);
 	paint_hook.rehook();
 
-	static bool first = true;
 	static bool render = false;
-
-	if (first)
-			dcon(NAME "Hooked PaintTraverse");
-	first = false;
-
 	const char* pname = ifs::panel->GetName(vpanel);
 
 	if (!render && !strcmp(pname, "staticClientDLLPanel"))
@@ -119,7 +117,7 @@ void hooked_paint(VPANEL vpanel, bool repaint, bool force)
 		render = false;
 
 	if (render && !strcmp(pname, "MatSystemTopPanel") &&
-			ifs::engine->IsPaused() &&
+			!ifs::engine->IsPaused() &&
 			!ifs::engine->IsTakingScreenshot())
 		runhacks(paint_hacks, "PaintTraverse");
 }
@@ -127,7 +125,7 @@ void hooked_paint(VPANEL vpanel, bool repaint, bool force)
 void basehook::init()
 {
 	createmove_hook.hook(ifs::client, 22, hooked_createmove);
-	createmove_hook.hook(ifs::panel, 41, hooked_createmove);
+	paint_hook.hook(ifs::panel, 40 + 2, hooked_paint);
 }
 void basehook::unload()
 {
