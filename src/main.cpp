@@ -12,8 +12,7 @@
 #include "sourceutil.h"
 #include "netvar.h"
 #include "basehook.h"
-#include "sdk/input.h"
-#include "sdk/surface.h"
+#include "tfdebug.h"
 #include "sdk/engine.h"
 
 extern "C" void libmain()
@@ -34,5 +33,8 @@ extern "C" void libmain()
 	new ConCommand("dumpclass", [](const CCommand& arg){
 		skim::netvar::dumpnets(arg.Arg(1));
 	});
+
+	new ConCommand("tfinfo", skim::tfdebug::localinfo);
+
 	return;
 }

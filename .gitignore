@@ -13,3 +13,4 @@ src/netvar.o
 src/vthook.o
 src/sdk/crc.o
 src/basehook.o
+src/tfdebug.o
