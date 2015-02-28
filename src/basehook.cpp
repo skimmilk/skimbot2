@@ -86,15 +86,14 @@ static void hooked_createmove(IBaseClientDLL* thisptr, int seq_num, float framet
 
 	// Grab the command
 	CUserCmd* cmd = ifs::input->GetUserCmd(seq_num);
-	CInput::CVerifiedUserCmd& verified =
-			((CInput*)ifs::input)->m_pVerifiedCommands[seq_num % 90];
+	auto verified = *(CInput::CVerifiedUserCmd**)((int)ifs::input + 0xC8);
 
 	if (ifs::engine->IsInGame())
 		runhacks(postmove_hacks, "post-CreateMove", cmd);
 
 	// Verify the command
-	verified.m_cmd = *cmd;
-	verified.m_crc = cmd->GetChecksum();
+	verified->m_cmd = *cmd;
+	verified->m_crc = cmd->GetChecksum();
 }
 
 static void hooked_paint(IPanel* thisptr, VPANEL vpanel, bool repaint, bool force)
@@ -124,7 +123,7 @@ static void hooked_paint(IPanel* thisptr, VPANEL vpanel, bool repaint, bool forc
 
 void basehook::init()
 {
-	createmove_hook.hook(ifs::client, 22, hooked_createmove);
+	createmove_hook.hook(ifs::client, 21, hooked_createmove);
 	paint_hook.hook(ifs::panel, 40 + 2, hooked_paint);
 }
 void basehook::unload()
