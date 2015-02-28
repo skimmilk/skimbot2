@@ -11,7 +11,8 @@ SOURCES=src/main.cpp\
 	src/sdk/cvar.cpp\
 	src/netvar.cpp\
 	src/vthook.cpp\
-	src/sdk/crc.cpp
+	src/sdk/crc.cpp\
+	src/basehook.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 HACK=libskimbot.so
 

@@ -9,6 +9,7 @@
 #define USERCMD_H_
 
 #include "crc.h"
+#include "common.h"
 
 class bf_read;
 class bf_write;
