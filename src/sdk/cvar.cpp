@@ -13,6 +13,7 @@
 #include "cvar.h"
 #include "ifs.h"
 #include "sourceutil.h"
+#include "const.h"
 
 ConCommandBase::ConCommandBase(const char* name, const char* helpstr, int flags)
 	: m_pNext(NULL), m_bRegistered(false), m_pszName(name), m_pszHelpString(helpstr), m_nFlags(flags)
@@ -22,7 +23,7 @@ ConCommandBase::ConCommandBase(const char* name, const char* helpstr, int flags)
 	m_pszName = (char*)malloc(len + 1);
 	strcpy((char*)m_pszName, name);
 
-	skim::dcon("Registering command " + std::string(name));
+	skim::dcon(NAME "Registering command " + std::string(name));
 	skim::ifs::cvar->RegisterConCommand(this);
 }
 ConCommandBase::~ConCommandBase()

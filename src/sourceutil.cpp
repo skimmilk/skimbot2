@@ -29,7 +29,7 @@ void dcon(const std::string& a)
 // Write the string to the developer console, error
 void econ(const std::string& a)
 {
-	ccon((color){220,10,10, 0}, a);
+	ccon((color){220,10,10,255}, a);
 	ifs::cvar->ConsolePrintf("\n");
 }
 
