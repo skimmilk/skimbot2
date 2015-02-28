@@ -25,6 +25,13 @@ public:
 	static int netoffset(const char* classname, const char* varname,
 			RecvProp** prop = nullptr);
 
+	// Dump offsets to console
+	static void dumpnets();
+	// Dump the names of all classes
+	static void dumpclasses();
+	// Dump all the netvars for a class by name
+	static void dumpnets(const char* classname);
+
 	// Weak hashing system, patent holder me don't use or ill sue
 #define _id (__LINE__ * 12345 + __COUNTER__ * 54321)
 

@@ -8,10 +8,11 @@
 #include "netvar.h"
 
 #include <vector>
+#include <algorithm>
 #include <string.h>
 #include "ifs.h"
 #include "sdk/client.h"
-#include "debug.h"
+#include "sourceutil.h"
 
 namespace skim
 {
@@ -69,6 +70,50 @@ int netvar::netoffset(const char* classname, const std::vector<const char*>& var
 int netvar::netoffset(const char* classname, const char* varname, RecvProp** prop)
 {
 	return netoffset(classname, std::vector<const char*>{varname}, prop);
+}
+
+static void dumptable(RecvTable* table, const std::string& previous, int sum = 0)
+{
+	for (int i = 0; i < table->m_nProps; i++)
+	{
+		RecvProp& current = table->m_pProps[i];
+		const char* name = current.m_pVarName;
+
+		// If this is nothing but array.001..., don't print it
+		if (current.m_bInsideArray ||
+				std::all_of(name, name + strlen(name),
+						[](char c){return c >= '0' && c <= '9';}))
+			continue;
+
+		if (!strcmp(name, "baseclass"))
+			name = "";
+
+		// Dump the offset
+		if (current.m_Offset + sum)
+			con(previous + "." + name + " = " + std::to_string(current.m_Offset + sum));
+		// If it has data, dump its table
+		if (current.m_pDataTable)
+			dumptable(current.m_pDataTable, previous + "." + name, sum + current.m_Offset);
+	}
+}
+
+void netvar::dumpnets()
+{
+	// For each class...
+	for (ClientClass* cclass = ifs::client->GetAllClasses(); cclass; cclass = cclass->m_pNext)
+		// For each table...
+		dumptable(cclass->m_pRecvTable, cclass->m_pNetworkName);
+}
+void netvar::dumpclasses()
+{
+	for (ClientClass* cclass = ifs::client->GetAllClasses(); cclass; cclass = cclass->m_pNext)
+		con(cclass->m_pNetworkName);
+}
+void netvar::dumpnets(const char* classname)
+{
+	for (ClientClass* cclass = ifs::client->GetAllClasses(); cclass; cclass = cclass->m_pNext)
+		if (!strcmp(classname, cclass->m_pNetworkName))
+			dumptable(cclass->m_pRecvTable, cclass->m_pNetworkName);
 }
 
 } /* namespace skim */

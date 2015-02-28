@@ -11,6 +11,10 @@
 #include "const.h"
 #include "sourceutil.h"
 #include "netvar.h"
+#include "basehook.h"
+#include "sdk/input.h"
+#include "sdk/surface.h"
+#include "sdk/engine.h"
 
 extern "C" void libmain()
 {
@@ -18,14 +22,17 @@ extern "C" void libmain()
 		skim::window("Could not load");
 
 	skim::cvar_hook::init();
+	skim::basehook::init();
 
 	skim::con(NAME "Loaded");
-
-	skim::window("Loaded");
+	skim::con(NAME "Build " __TIMESTAMP__);
+	skim::ifs::engine->ClientCmd_Unrestricted("showconsole");
 
 	// Test netvars
-	new ConCommand("zimbabwe", [](const CCommand& a){
-		skim::con(std::to_string(skim::netvar::netoffset(a.Arg(1), a.Arg(2))));
+	new ConCommand("dumpall", skim::netvar::dumpnets);
+	new ConCommand("dumpname", skim::netvar::dumpclasses);
+	new ConCommand("dumpclass", [](const CCommand& arg){
+		skim::netvar::dumpnets(arg.Arg(1));
 	});
 	return;
 }
