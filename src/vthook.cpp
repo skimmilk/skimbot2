@@ -12,7 +12,7 @@
 namespace skim
 {
 
-long* vthook::hook(void* obj, long* vmtholder, int num_fns, int fn_index, void* fn)
+long* hook_vmt(void* obj, long* vmtholder, int num_fns, int fn_index, void* fn)
 {
     // Grab the vtable pointer
     long** pptable = (long**)obj;

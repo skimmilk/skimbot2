@@ -11,44 +11,46 @@
 namespace skim
 {
 
+// obj is the pointer to the object to be modified
+// vmtholder is the pointer to the array that will be used as the new vtable
+// num_fns is the number of functions in obj's vtable
+// fn_index is the index of the function to hook in the vtable
+// fn is the function that will get called
+long* hook_vmt(void* obj, long* vmtholder, int num_fns, int fn_index, void* fn);
+
+// Does the casting for us
+template <class T, typename R, typename... Args>
+long* hook_vmt(T* obj, long* vmtholder, int num_fns, int fn_index, R (*fn)(Args...))
+{
+	return hook_vmt((void*)obj, vmtholder, num_fns, fn_index, (void*)fn);
+}
+
 // The vthook object supports hooking one function in a class
+template <int num_fns>
 class vthook
 {
+private:
+	long newvmt[num_fns];
+	long* origvmt;
+	void* obj;
+
 public:
-	// obj is the pointer to the object to be modified
-	// vmtholder is the pointer to the array that will be used as the new vtable
-	// num_fns is the number of functions in obj's vtable
-	// fn_index is the index of the function to hook in the vtable
-	// fn is the function that will get called
-	static long* hook(void* obj, long* vmtholder, int num_fns, int fn_index, void* fn);
-
-	// Does the casting for us
-	template <class T, typename R, typename... Args>
-	static long* hook(T* obj, long* vmtholder, int num_fns, int fn_index, R (*fn)(Args...))
-	{
-		return hook((void*)obj, vmtholder, num_fns, fn_index, (void*)fn);
-	}
-
-	vthook(void* tobj, int num_fns, int fn_index, void* fn)
-	: newvmt(new long[num_fns]),
-		origvmt(hook(tobj, newvmt, num_fns, fn_index, fn)),
-		obj(tobj)
-	{}
-
-	template <class T, typename R, typename... Args>
-	vthook(T* obj, int num_fns, int fn_index, R (*fn)(Args...))
-	: vthook((void*)obj, num_fns, fn_index, (void*)fn)
-	{}
-
 	~vthook()
 	{
 		unhook();
-		delete[] newvmt;
 	}
 
-	long* newvmt;
-	long* origvmt;
-	void* obj;
+	inline void hook(void* _obj, int fn_index, void* fn)
+	{
+		obj = _obj;
+		origvmt = hook_vmt(_obj, newvmt, num_fns, fn_index, fn);
+	}
+
+	template <class T, typename R, typename... Args>
+	inline void hook(T* _obj, int fn_index, R (*fn)(Args...))
+	{
+		hook((void*)_obj, fn_index, (void*)fn);
+	}
 
 	// Set vmt back to its original
 	inline void unhook()
