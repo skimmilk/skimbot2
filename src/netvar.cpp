@@ -22,11 +22,15 @@ RecvProp* netsearch(RecvTable* table, const char* offname)
 {
 	for (int i = 0; i < table->m_nProps; i++)
 	{
-		if (!strcmp(table->m_pProps[i].m_pVarName, offname))
+		RecvProp& current = table->m_pProps[i];
+		// If the names match...
+		if (!strcmp(current.m_pVarName, offname))
 			return table->m_pProps + i;
-		if (!strcmp(table->m_pProps[i].m_pVarName, "baseclass"))
+
+		// If it has elements, search them
+		if (current.m_pDataTable)
 		{
-			RecvProp* inner = netsearch(table->m_pProps[i].m_pDataTable, offname);
+			RecvProp* inner = netsearch(current.m_pDataTable, offname);
 			if (inner)
 				return inner;
 		}

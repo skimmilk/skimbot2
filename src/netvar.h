@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "sdk/recv.h"
-#include "debug.h"
 
 namespace skim
 {
@@ -37,13 +36,21 @@ public:
 
 	// Only searches for offset once and stores the value for later
 	// Cannot use const char* in template, use short identifier instead
-	template <int put__id_here>
-	static int off(const char* cname, const char* varname)
+	template <int put__id_here, typename... Args>
+	static int off(const char* cname, Args... args)
 	{
 		static int offset = 0;
 		if (offset) return offset;
-		offset = netoffset(cname, varname);
+		offset = netoffset(cname, std::vector<const char*>{args...});
 		return offset;
+	}
+
+	// Get the value using the offset of the netvars
+	template <int put__id_here, typename Type, typename Class, typename... Args>
+	static Type& net(Class* obj, Args... args)
+	{
+		int offset = off<put__id_here>(args...);
+		return *(Type*)((char*)obj + offset);
 	}
 };
 
