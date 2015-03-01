@@ -13,6 +13,7 @@
 #include "sourceutil.h"
 #include "netvar.h"
 #include "const.h"
+#include "tfplayer.h"
 #include "sdk/cliententity.h"
 #include "sdk/engine.h"
 
@@ -36,27 +37,25 @@ void tfdebug::playerinfo(int index)
 
 	try
 	{
-		C_BaseEntity* player = ent->GetBaseEntity();
+		tfplayer* player = (tfplayer*)ent->GetBaseEntity();
 		Vector pos = ent->GetAbsOrigin();
-		Vector pos2 = netvar::net<_id, Vector>(player, "CBasePlayer", "m_vecOrigin");
+		Vector pos2 = player->m_vecOrigin();
 
 		con("ent->GetAbsOrigin():\t\t" + std::to_string(pos.x) +
 				", " + std::to_string(pos.y) + ", " + std::to_string(pos.z));
 		con("m_vecOrigin:\t\t" + std::to_string(pos2.x) +
 				", " + std::to_string(pos2.y) + ", " + std::to_string(pos2.z));
 
-		con("m_iHealth:\t\t" + std::to_string(
-				netvar::net<_id, int>(player, "CBasePlayer", "m_iHealth")));
+		con("m_iHealth:\t\t" + std::to_string(player->m_iHealth()));
 
-		con("m_iTeamNum:\t\t" + std::to_string(
-				netvar::net<_id, int>(player, "CBasePlayer", "m_iTeamNum")));
-		con("m_iClass:\t\t" + std::to_string(
-				netvar::net<_id, int>(player, "CTFPlayer", "m_PlayerClass", "m_iClass")));
-		con("m_nDisguiseClass:\t\t" + std::to_string(
-				netvar::net<_id, int>(player, "CTFPlayer", "m_Shared", "m_nDisguiseClass")));
+		con("m_iTeamNum:\t\t" + std::to_string(player->m_iTeamNum()));
+		con("m_iClass:\t\t" + std::to_string(player->m_iClass()));
+		con("m_nDisguiseClass:\t\t" + std::to_string(player->m_nDisguiseClass()));
 
-		std::bitset<8*4> flags (netvar::net<_id, int>(player, "CTFPlayer", "m_Shared", "m_nPlayerCond"));
+		std::bitset<8*4> flags (player->m_nPlayerCond());
+		std::bitset<8*4> state (player->m_nPlayerState());
 		con("m_nPlayerCond:\t\t" + flags.to_string());
+		con("m_nPlayerState:\t\t" + state.to_string());
 	}
 	catch (...)
 	{
