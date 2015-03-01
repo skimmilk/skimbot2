@@ -64,6 +64,8 @@ public:
 		return crc;
 	}
 
+	virtual ~CUserCmd() {}
+
 	// For matching server and client commands for debugging
 	int		command_number;
 
