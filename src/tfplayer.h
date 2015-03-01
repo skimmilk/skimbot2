@@ -19,10 +19,12 @@ class tfplayer
 {
 public:
 	DEFNETVAR(int, m_iHealth, "CBasePlayer");
+	DEFNETVAR(int, m_lifeState, "CBasePlayer");
 	DEFNETVAR(int, m_fFlags, "CBasePlayer");
 	DEFNETVAR(Vector, m_vecOrigin, "CBasePlayer");
 	DEFNETVAR(int, m_iTeamNum, "CBasePlayer");
 	DEFNETVAR(int, m_hActiveWeapon, "CBasePlayer");
+	DEFNETVAR(int, m_bGlowEnabled, "CBasePlayer");
 
 	DEFNETVAR(int, m_iClass, "CTFPlayer", "m_PlayerClass");
 	DEFNETVAR(int, m_nPlayerCond, "CTFPlayer", "m_Shared");
@@ -37,6 +39,7 @@ class tfweapon
 public:
 	DEFNETVAR(float, m_flNextPrimaryAttack, "CBaseCombatWeapon", "LocalActiveWeaponData", "m_flNextPrimaryAttack");
 	DEFNETVAR(int, m_iState, "CBaseCombatWeapon");
+	DEFNETVAR(int, m_nKillComboCount, "CTFWeaponBase");
 };
 
 class tfobject
@@ -46,6 +49,17 @@ public:
 	DEFNETVAR(int, m_iMaxHealth, "CBaseObject");
 	DEFNETVAR(int, m_fObjectFlags, "CBaseObject");
 };
+
+class tfprojectile
+{
+public:
+	DEFNETVAR(Vector, m_vecOrigin, "CBaseProjectile");
+	DEFNETVAR(int, m_iTeamNum, "CBaseProjectile");
+	DEFNETVAR(int, m_hOwnerEntity, "CBaseProjectile");
+	DEFNETVAR(int, m_hOriginalLauncher, "CBaseProjectile");
+
+	DEFNETVAR(int, m_hLauncher, "CTFBaseProjectile");
+}
 
 }
 

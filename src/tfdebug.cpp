@@ -56,6 +56,7 @@ void tfdebug::playerinfo(int index)
 		std::bitset<8*4> state (player->m_nPlayerState());
 		con("m_nPlayerCond:\t\t" + flags.to_string());
 		con("m_nPlayerState:\t\t" + state.to_string());
+		con("m_lifeState:\t\t" + std::to_string(player->m_lifeState()));
 	}
 	catch (...)
 	{
