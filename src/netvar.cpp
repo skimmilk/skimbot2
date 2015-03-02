@@ -83,12 +83,6 @@ static void dumptable(RecvTable* table, const std::string& previous, int sum = 0
 		RecvProp& current = table->m_pProps[i];
 		const char* name = current.m_pVarName;
 
-		// If this is nothing but array.001..., don't print it
-		if (current.m_bInsideArray ||
-				std::all_of(name, name + strlen(name),
-						[](char c){return c >= '0' && c <= '9';}))
-			continue;
-
 		if (!strcmp(name, "baseclass"))
 			name = "";
 
