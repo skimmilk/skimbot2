@@ -18,8 +18,9 @@ namespace skim
 
 class trace
 {
+public:
 	// Returns the the player in the line of sight
-	static tfplayer* sight(const Vector& start, QAngle viewangle, int idignore);
+	static tfplayer* sight(const Vector& start, const QAngle& viewangle, int idignore);
 };
 
 } /* namespace skim */

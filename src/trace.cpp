@@ -19,24 +19,24 @@ namespace skim
 class playerfilter : public ITraceFilter
 {
 public:
-    playerfilter(int indexIgnore) : ignore(indexIgnore) {}
+	playerfilter(int indexIgnore) : ignore(indexIgnore) {}
 
-    bool ShouldHitEntity(IHandleEntity* ent, int)
-    {
-    	auto clientent = ifs::entities->GetClientEntityFromHandle(ent->GetRefEHandle());
-        tfplayer *player = (tfplayer*)clientent->GetBaseEntity();
-        return player->m_iTeamNum() > 1 && clientent->entindex() != ignore;
-    }
-    virtual TraceType_t GetTraceType() const
-    {
-        return TRACE_EVERYTHING;
-    }
+	bool ShouldHitEntity(IHandleEntity* ent, int)
+	{
+		CBaseHandle asdf = ent->GetRefEHandle();
+		tfplayer* player = (tfplayer*)ifs::entities->GetClientEntity(asdf & 0x0fff);
+		return player->m_iTeamNum() > 1 && player->entindex() != ignore;
+	}
+	virtual TraceType_t GetTraceType() const
+	{
+		return TRACE_EVERYTHING;
+	}
 
 private:
-    int ignore;
+	int ignore;
 };
 
-tfplayer* trace::sight(const Vector& start, QAngle viewangle, int idignore)
+tfplayer* trace::sight(const Vector& start, const QAngle& viewangle, int idignore)
 {
 	Vector direction = AngleVectors(viewangle);
 
@@ -52,6 +52,10 @@ tfplayer* trace::sight(const Vector& start, QAngle viewangle, int idignore)
 
 	trace_t tr;
 	ifs::tracer->TraceRay(ray, MASK_SHOT, filter, &tr);
+
+	// Did it hit the world?
+	if (tr.m_pEnt == (IClientEntity*)ifs::entities->GetClientEntity(0)->GetBaseEntity())
+		return 0;
 
 	return (tfplayer*)tr.m_pEnt;
 }
