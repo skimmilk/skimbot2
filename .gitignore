@@ -17,3 +17,4 @@ src/tfdebug.o
 src/exit.o
 src/trace.o
 src/trigger.o
+src/bhop.o
