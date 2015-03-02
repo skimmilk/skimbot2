@@ -24,7 +24,7 @@ public:
 	bool ShouldHitEntity(IHandleEntity* ent, int)
 	{
 		CBaseHandle asdf = ent->GetRefEHandle();
-		tfplayer* player = (tfplayer*)ifs::entities->GetClientEntity(asdf & 0x0fff);
+		tfplayer* player = (tfplayer*)ifs::entities->GetClientEntity(asdf & 0x0fff)->GetBaseEntity();
 		return player->m_iTeamNum() > 1 && player->entindex() != ignore;
 	}
 	virtual TraceType_t GetTraceType() const
