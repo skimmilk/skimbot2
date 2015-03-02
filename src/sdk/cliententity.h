@@ -10,8 +10,6 @@
 
 class bf_read;
 
-class CBaseHandle;
-
 // An IHandleEntity-derived class can go into an entity list and use ehandles.
 class IHandleEntity
 {

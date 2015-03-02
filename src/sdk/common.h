@@ -20,7 +20,39 @@ struct color
 struct Vector
 {
 	float x, y, z;
+
+	float LengthSqr(void) const
+	{
+		return (x*x + y*y + z*z);
+	}
+	float& operator[](int i) const
+	{
+		return ((float*)this)[i];
+	}
 };
+
+inline void VectorAdd( const Vector& a, const Vector& b, Vector& c )
+{
+	c.x = a.x + b.x;
+	c.y = a.y + b.y;
+	c.z = a.z + b.z;
+}
+inline void VectorSubtract( const Vector& a, const Vector& b, Vector& c )
+{
+	c.x = a.x - b.x;
+	c.y = a.y - b.y;
+	c.z = a.z - b.z;
+}
+inline void VectorClear(Vector& a)
+{
+	a.x = a.y = a.z = 0;
+}
+inline void VectorMultiply(Vector& a, float b)
+{
+	a.x *= b;
+	a.y *= b;
+	a.z *= b;
+}
 
 struct Vector2D
 {
@@ -56,10 +88,10 @@ typedef struct player_info_s
 	// true if player is the HLTV proxy
 	bool			ishltv;
 	// I assume REPLAY_ENABLED is on for TF2
-//#if defined( REPLAY_ENABLED )
+	//#if defined( REPLAY_ENABLED )
 	// true if player is the Replay proxy
 	bool			isreplay;
-//#endif
+	//#endif
 	// custom files CRC for this player
 	CRC32_t			customFiles[MAX_CUSTOM_FILES];
 	// this counter increases each time the server downloaded a new file
@@ -68,6 +100,7 @@ typedef struct player_info_s
 
 typedef unsigned int uint32;
 typedef unsigned int uint;
+typedef unsigned long CBaseHandle;
 struct model_t;
 class SurfInfo;
 class CAudioSource;

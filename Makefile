@@ -14,7 +14,8 @@ SOURCES=src/main.cpp\
 	src/sdk/crc.cpp\
 	src/basehook.cpp\
 	src/tfdebug.cpp\
-	src/exit.cpp
+	src/exit.cpp\
+	src/trace.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 HACK=libskimbot.so
 

@@ -59,7 +59,7 @@ public:
 	DEFNETVAR(int, m_hOriginalLauncher, "CBaseProjectile");
 
 	DEFNETVAR(int, m_hLauncher, "CTFBaseProjectile");
-}
+};
 
 }
 

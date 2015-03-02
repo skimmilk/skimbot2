@@ -15,3 +15,4 @@ src/sdk/crc.o
 src/basehook.o
 src/tfdebug.o
 src/exit.o
+src/trace.o
