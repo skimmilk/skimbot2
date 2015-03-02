@@ -13,8 +13,9 @@
 #include "netvar.h"
 #include "basehook.h"
 #include "tfdebug.h"
-#include "sdk/engine.h"
 #include "exit.h"
+#include "trigger.h"
+#include "sdk/engine.h"
 
 ConCommand* dumpall;
 ConCommand* dumpname;
@@ -34,6 +35,8 @@ extern "C" void libmain()
 	skim::basehook::init();
 	skim::exit::handle(skim::basehook::unload);
 
+	skim::trigger::init();
+	skim::exit::handle(skim::trigger::unload);
 
 	// Test netvars
 	dumpall = new ConCommand("dumpall", skim::netvar::dumpnets);
