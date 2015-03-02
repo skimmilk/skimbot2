@@ -27,10 +27,11 @@ class IEntityEnumerator;
 
 struct Ray_t
 {
-	Vector m_Start;	// starting point, centered within the extents
-	Vector m_Delta;	// direction + length of the ray
-	Vector m_StartOffset;	// Add this to m_Start to get the actual ray start
-	Vector m_Extents;	// Describes an axis aligned box extruded along a ray
+	// Align vectors to 16 bits
+	alignas(16) Vector m_Start;	// starting point, centered within the extents
+	alignas(16) Vector m_Delta;	// direction + length of the ray
+	alignas(16) Vector m_StartOffset;	// Add this to m_Start to get the actual ray start
+	alignas(16) Vector m_Extents;	// Describes an axis aligned box extruded along a ray
 	bool	m_IsRay;	// are the extents zero?
 	bool	m_IsSwept;	// is delta != 0?
 
@@ -40,7 +41,7 @@ struct Ray_t
 
 		m_IsSwept = (m_Delta.LengthSqr() != 0);
 
-		m_Extents.x = m_Extents.y = m_Extents.z = 0;
+		VectorClear( m_Extents );
 		m_IsRay = true;
 
 		// Offset m_Start to be in the center of the box...
@@ -170,25 +171,6 @@ struct csurface_t
 //-----------------------------------------------------------------------------
 class CGameTrace : public CBaseTrace
 {
-public:
-
-	// Returns true if hEnt points at the world entity.
-	// If this returns true, then you can't use GetHitBoxIndex().
-	bool DidHitWorld() const;
-
-	// Returns true if we hit something and it wasn't the world.
-	bool DidHitNonWorldEntity() const;
-
-	// Gets the entity's network index if the trace has hit an entity.
-	// If not, returns -1.
-	int GetEntityIndex() const;
-
-	// Returns true if there was any kind of impact at all
-	bool DidHit() const;
-
-	// The engine doesn't know what a CBaseEntity is, so it has a backdoor to
-	// let it get at the edict.
-
 public:
 
 	float		fractionleftsolid;		// time we left a solid, only valid if we started in solid

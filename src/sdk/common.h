@@ -19,6 +19,8 @@ struct color
 
 struct Vector
 {
+	Vector() : x(0), y(0), z(0){}
+	Vector(float _x, float _y, float _z) : x(_x), y(_y), z(_z){}
 	float x, y, z;
 
 	float LengthSqr(void) const
@@ -63,6 +65,7 @@ struct Vector2D
 
 struct QAngle
 {
+	QAngle() : x(0), y(0), z(0){}
 	float x, y, z;
 };
 

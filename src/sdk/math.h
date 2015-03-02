@@ -11,14 +11,14 @@
 #include <math.h>
 #include "common.h"
 
-Vector AngleVectors(QAngle& angle)
+inline Vector AngleVectors(const QAngle& angle)
 {
 	// Convert pitch, yaw, roll to radians and calculate normalized vector
-	float a = angle.x * (M_PI*2 / 360);
+	float a = angle.y * (M_PI*2 / 360);
 	float sy = sin(a);
 	float cy = cos(a);
 
-	a = angle.y * (M_PI*2 / 360);
+	a = angle.x * (M_PI*2 / 360);
 	float sp = sin(a);
 	float cp = cos(a);
 
