@@ -40,11 +40,14 @@ void tfdebug::playerinfo(int index)
 		tfplayer* player = (tfplayer*)ent->GetBaseEntity();
 		Vector pos = ent->GetAbsOrigin();
 		Vector pos2 = player->m_vecOrigin();
+		Vector eye = player->m_vecViewOffset();
 
 		con("ent->GetAbsOrigin():\t\t" + std::to_string(pos.x) +
 				", " + std::to_string(pos.y) + ", " + std::to_string(pos.z));
 		con("m_vecOrigin:\t\t" + std::to_string(pos2.x) +
 				", " + std::to_string(pos2.y) + ", " + std::to_string(pos2.z));
+		con("m_vecViewOffset:\t\t" + std::to_string(eye.x) +
+				", " + std::to_string(eye.y) + ", " + std::to_string(eye.z));
 
 		con("m_iHealth:\t\t" + std::to_string(player->m_iHealth()));
 
