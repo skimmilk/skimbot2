@@ -33,7 +33,9 @@ static void frame(CUserCmd* cmd)
 	bool grounded = tfplayer::me()->m_fFlags() & FL_ONGROUND;
 	bool jumping = cmd->buttons & IN_JUMP;
 
-	if (first && jumping)
+	if (!jumping)
+		first = true;
+	else if (first && jumping)
 		first = false;
 	// If we are not on the ground, disable the jump button
 	else if (jumping && henable->m_nValue && !grounded)
