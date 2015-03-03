@@ -18,3 +18,4 @@ src/exit.o
 src/trace.o
 src/trigger.o
 src/bhop.o
+src/trig.o

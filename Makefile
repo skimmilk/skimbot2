@@ -1,7 +1,7 @@
 CXX=g++
 CC=gcc
 CFLAGS=-c -Wall -Wextra -g -fpic -m32 -O0 -std=c++11 -I src/ -Wfatal-errors -DPOSIX
-LDFLAGS=-m32 -shared -ldl 
+LDFLAGS=-m32 -shared -ldl -lm
 SOURCES=src/main.cpp\
 	src/sourceutil.cpp\
 	src/sigscan.cpp\
@@ -17,7 +17,8 @@ SOURCES=src/main.cpp\
 	src/exit.cpp\
 	src/trace.cpp\
 	src/trigger.cpp\
-	src/bhop.cpp
+	src/bhop.cpp\
+	src/trig.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 HACK=libskimbot.so
 
