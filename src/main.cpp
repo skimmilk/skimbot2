@@ -16,6 +16,7 @@
 #include "exit.h"
 #include "trigger.h"
 #include "bhop.h"
+#include "spin.h"
 #include "sdk/engine.h"
 
 ConCommand* dumpall;
@@ -41,6 +42,9 @@ extern "C" void libmain()
 
 	skim::bhop::init();
 	skim::exit::handle(skim::bhop::unload);
+
+	skim::spin::init();
+	skim::exit::handle(skim::spin::unload);
 
 	// Test netvars
 	dumpall = new ConCommand("dumpall", skim::netvar::dumpnets);

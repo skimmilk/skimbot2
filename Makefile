@@ -18,7 +18,8 @@ SOURCES=src/main.cpp\
 	src/trace.cpp\
 	src/trigger.cpp\
 	src/bhop.cpp\
-	src/trig.cpp
+	src/trig.cpp\
+	src/spin.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 HACK=libskimbot.so
 
