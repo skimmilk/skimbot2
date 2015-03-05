@@ -20,3 +20,4 @@ src/trigger.o
 src/bhop.o
 src/trig.o
 src/spin.o
+src/sdk/math.o

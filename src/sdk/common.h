@@ -10,63 +10,13 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
+#include "math.h"
+
 typedef void* (*CreateInterfaceFn)(const char* name, int* code);
 
 struct color
 {
 	unsigned char red, blue, green, alpha;
-};
-
-struct Vector
-{
-	Vector() : x(0), y(0), z(0){}
-	Vector(float _x, float _y, float _z) : x(_x), y(_y), z(_z){}
-	float x, y, z;
-
-	float LengthSqr(void) const
-	{
-		return (x*x + y*y + z*z);
-	}
-	float& operator[](int i) const
-	{
-		return ((float*)this)[i];
-	}
-};
-
-inline void VectorAdd( const Vector& a, const Vector& b, Vector& c )
-{
-	c.x = a.x + b.x;
-	c.y = a.y + b.y;
-	c.z = a.z + b.z;
-}
-inline void VectorSubtract( const Vector& a, const Vector& b, Vector& c )
-{
-	c.x = a.x - b.x;
-	c.y = a.y - b.y;
-	c.z = a.z - b.z;
-}
-inline void VectorClear(Vector& a)
-{
-	a.x = a.y = a.z = 0;
-}
-inline void VectorMultiply(Vector& a, float b)
-{
-	a.x *= b;
-	a.y *= b;
-	a.z *= b;
-}
-
-struct Vector2D
-{
-	float x, y;
-	Vector2D(float _x, float _y) : x(_x), y(_y) {}
-	Vector2D() : x(0), y(0) {}
-};
-
-struct QAngle
-{
-	QAngle() : x(0), y(0), z(0){}
-	float x, y, z;
 };
 
 #define MAX_PLAYER_NAME_LENGTH 32
