@@ -106,6 +106,10 @@ void VectorSubtract( const Vector& a, const Vector& b, Vector& c )
 	c.y = a.y - b.y;
 	c.z = a.z - b.z;
 }
+void VectorClear(Vector& a)
+{
+	a.x = a.y = a.z = 0;
+}
 void VectorMultiply(Vector& a, float b)
 {
 	a.x *= b;

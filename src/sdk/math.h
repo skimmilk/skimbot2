@@ -10,6 +10,12 @@
 
 #include "common.h"
 
+typedef float vec3_t[3];
+typedef float vec_t;
+#define MAXSTUDIOBONES		128		// total bones actually used
+#define BONE_USED_BY_HITBOX			0x00000100	// bone (or child) is used by a hit box
+#define RAD2DEG( x  )  ( (float)(x) * (float)(180.f / M_PI) )
+
 struct Vector
 {
 	Vector() : x(0), y(0), z(0){}
@@ -51,6 +57,20 @@ struct QAngle
 	float x, y, z;
 };
 
+class VMatrix
+{
+public:
+	vec_t		m[4][4];
+	inline float* operator[](int i)
+	{
+		return m[i];
+	}
+	inline const float* operator[](int i) const
+	{
+		return m[i];
+	}
+
+};
 struct matrix3x4_t
 {
 	matrix3x4_t() {}
@@ -91,12 +111,6 @@ struct matrix3x4_t
 
 	float m_flMatVal[3][4];
 };
-
-typedef float vec3_t[3];
-typedef float vec_t;
-#define MAXSTUDIOBONES		128		// total bones actually used
-#define BONE_USED_BY_HITBOX			0x00000100	// bone (or child) is used by a hit box
-#define RAD2DEG( x  )  ( (float)(x) * (float)(180.f / M_PI) )
 
 Vector AngleVectors(const QAngle& angle);
 void VectorAdd( const Vector& a, const Vector& b, Vector& c );

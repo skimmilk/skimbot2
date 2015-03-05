@@ -22,3 +22,4 @@ src/trig.o
 src/spin.o
 src/sdk/math.o
 src/skeltal.o
+src/draw.o

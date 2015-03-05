@@ -21,7 +21,8 @@ SOURCES=src/main.cpp\
 	src/trig.cpp\
 	src/spin.cpp\
 	src/sdk/math.cpp\
-	src/skeltal.cpp
+	src/skeltal.cpp\
+	src/draw.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 HACK=libskimbot.so
 
