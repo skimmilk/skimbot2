@@ -64,4 +64,11 @@ void trig::aim(CUserCmd* cmd, const Vector& eyes, const Vector& at, bool move)
 	cmd->viewangles.y = y;
 }
 
+void trig::aim(QAngle& ang, const Vector& from, const Vector& to)
+{
+	Vector dist = from - to;
+
+	VectorAngles(dist, ang);
+}
+
 } /* namespace skim */

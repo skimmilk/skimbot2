@@ -30,6 +30,8 @@ public:
 	// Set aim towards position in space
 	// If move is true, cmd's movement will be modified to keep moving forward
 	static void aim(CUserCmd* cmd, const Vector& eyes, const Vector& at, bool move);
+	// Set angle to aim directly at point in space
+	static void aim(QAngle& ang, const Vector& from, const Vector& to);
 };
 
 } /* namespace skim */
