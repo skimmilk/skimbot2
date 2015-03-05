@@ -39,11 +39,11 @@ private:
 	int ignore;
 };
 
-tfplayer* trace::sight(const Vector& start, const QAngle& viewangle, int idignore)
+IClientEntity* trace::ray(const Vector& start, const QAngle& aim, int ignore)
 {
-	Vector direction = AngleVectors(viewangle);
+	Vector direction = AngleVectors(aim);
 
-	player_filter* filter = new player_filter(idignore);
+	player_filter* filter = new player_filter(ignore);
 
 	Ray_t ray;
 	Vector end {
@@ -56,19 +56,30 @@ tfplayer* trace::sight(const Vector& start, const QAngle& viewangle, int idignor
 	trace_t tr;
 	ifs::tracer->TraceRay(ray, MASK_SHOT, filter, &tr);
 
-	if (!tr.m_pEnt)
-		return 0;
+	return tr.m_pEnt;
+}
+tfplayer* trace::sight(const Vector& start, const QAngle& viewangle, int idignore)
+{
+	auto aim = ray(start, viewangle, idignore);
 
-	// Did it hit the world?
-	if (tr.m_pEnt == (IClientEntity*)ifs::entities->GetClientEntity(0)->GetBaseEntity())
+	if (!aim ||
+			// Did it hit a player?
+			aim->entindex() < 0 || aim->entindex() > 32)
 		return 0;
+	return (tfplayer*)aim;
+}
 
-	// Did it hit a player?
-	tfplayer* player = (tfplayer*)tr.m_pEnt;
-	if (player->entindex() < 0 || player->entindex() > 32)
-		return 0;
+bool trace::can_see_fast(const Vector& start, tfplayer* pl)
+{
+	Vector middle = pl->GetAbsOrigin();
+	middle.y += 32;
 
-	return player;
+	Vector difference = middle - start;
+	QAngle aim;
+	VectorAngles(difference, aim);
+	auto hit = ray(start, aim, ifs::engine->GetLocalPlayer());
+
+	return (tfplayer*)hit == pl;
 }
 
 } /* namespace skim */
