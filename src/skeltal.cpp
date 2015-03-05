@@ -26,11 +26,8 @@ static int correct_hbox(tfplayer* player, int hbox)
     return hbox - 1;
 }
 
-Vector skeltal::pos(tfplayer* player, int hitbox, float extent)
+void skeltal::bbox(tfplayer* player, int hitbox, Vector& min, Vector& max)
 {
-	if (hitbox < 0)
-		return player->GetAbsOrigin();
-
 	hitbox = correct_hbox(player, hitbox);
 	matrix3x4_t bones[MAXSTUDIOBONES];
 	player->SetupBones(bones, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, 0);
@@ -48,11 +45,23 @@ Vector skeltal::pos(tfplayer* player, int hitbox, float extent)
 	studiohdr_t* studio = ifs::model_info->GetStudiomodel(model);
 	mstudiobbox_t* box = studio->pHitbox(hitbox, 0);
 
-	Vector min, max;
 	VectorTransform(box->bbmin, bones[box->bone], min);
 	VectorTransform(box->bbmax, bones[box->bone], max);
 
-	return (min * extent) + (max * (1.f - extent));
+}
+Vector skeltal::pos(tfplayer* player, int hitbox, extents ext)
+{
+	if (hitbox < 0)
+		return player->GetAbsOrigin();
+
+	Vector min, max;
+	skeltal::bbox(player, hitbox, min, max);
+
+	if (ext == extents::middle)
+		return (min + max) * .5;
+	if (ext == extents::min)
+		return min;
+	return max;
 }
 
 } /* namespace skim */
