@@ -16,18 +16,21 @@ namespace skim
 {
 
 // Filter that hits only players
-class playerfilter : public ITraceFilter
+class player_filter : public ITraceFilter
 {
 public:
-	playerfilter(int indexIgnore) : ignore(indexIgnore) {}
+	player_filter(int indexIgnore) : ignore(indexIgnore) {}
 
-	bool ShouldHitEntity(IHandleEntity* ent, int)
+	bool ShouldHitEntity(IHandleEntity* ent, int) override
 	{
 		CBaseHandle asdf = ent->GetRefEHandle();
+
+		// For some reason GetClientEntityFromHandle crashes
+		// Manually get its entity index
 		tfplayer* player = (tfplayer*)ifs::entities->GetClientEntity(asdf & 0x0fff)->GetBaseEntity();
-		return player->m_iTeamNum() > 1 && player->entindex() != ignore;
+		return player->entindex() != ignore;
 	}
-	virtual TraceType_t GetTraceType() const
+	TraceType_t GetTraceType() const override
 	{
 		return TRACE_EVERYTHING;
 	}
@@ -40,7 +43,7 @@ tfplayer* trace::sight(const Vector& start, const QAngle& viewangle, int idignor
 {
 	Vector direction = AngleVectors(viewangle);
 
-	playerfilter* filter = new playerfilter(idignore);
+	player_filter* filter = new player_filter(idignore);
 
 	Ray_t ray;
 	Vector end {
@@ -53,11 +56,19 @@ tfplayer* trace::sight(const Vector& start, const QAngle& viewangle, int idignor
 	trace_t tr;
 	ifs::tracer->TraceRay(ray, MASK_SHOT, filter, &tr);
 
+	if (!tr.m_pEnt)
+		return 0;
+
 	// Did it hit the world?
 	if (tr.m_pEnt == (IClientEntity*)ifs::entities->GetClientEntity(0)->GetBaseEntity())
 		return 0;
 
-	return (tfplayer*)tr.m_pEnt;
+	// Did it hit a player?
+	tfplayer* player = (tfplayer*)tr.m_pEnt;
+	if (player->entindex() < 0 || player->entindex() > 32)
+		return 0;
+
+	return player;
 }
 
 } /* namespace skim */
