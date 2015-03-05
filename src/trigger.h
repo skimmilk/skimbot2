@@ -16,7 +16,6 @@ class trigger
 public:
 	// Adds itself to the basehook on init
 	static void init();
-	static void unload();
 };
 
 } /* namespace skim */

@@ -15,6 +15,7 @@
 #include "ifs.h"
 #include "sourceutil.h"
 #include "const.h"
+#include "exit.h"
 
 namespace skim
 {
@@ -89,16 +90,18 @@ static void cmd_hide(const CCommand& args)
 	if (cvar_hook::hide(args.Arg(1)) == nullptr)
 		con("Could not find cvar");
 }
+
+static void unload()
+{
+	delete hidecommand;
+	// TODO: Restore commands
+}
+
 void cvar_hook::init()
 {
 	hidecommand = new ConCommand(PREFIX "cvar_hide", cmd_hide,
 			"Hide a cvar from anticheats and unlock it");
-}
-
-void cvar_hook::unload()
-{
-	delete hidecommand;
-	// TODO: Restore commands
+	exit::handle(unload);
 }
 
 }; /* namespace skim */

@@ -12,6 +12,7 @@
 #include "tfplayer.h"
 #include "basehook.h"
 #include "sourceutil.h"
+#include "exit.h"
 #include "sdk/cvar.h"
 #include "sdk/usercmd.h"
 #include "sdk/engine.h"
@@ -63,18 +64,19 @@ static void frame(CUserCmd* cmd)
 	last = here;
 }
 
+static void unload()
+{
+	delete henable;
+	delete strafe;
+	delete samt;
+}
 void bhop::init()
 {
 	henable = new ConVar(PREFIX "bhop", "0", 0, "Enable bunny hopping");
 	strafe = new ConVar(PREFIX "strafe", "0", 0, "Enable auto air strafing");
 	samt = new ConVar(PREFIX "strafe_amount", "10", 0, "Autostrafe amount");
 	basehook::post_move(frame, "bhop");
-}
-void bhop::unload()
-{
-	delete henable;
-	delete strafe;
-	delete samt;
+	exit::handle(unload);
 }
 
 } /* namespace skim */

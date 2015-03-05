@@ -25,7 +25,6 @@ public:
 	static ConVar* hide(const char* name);
 
 	static void init();
-	static void unload();
 };
 
 } /* namespace skim */

@@ -13,6 +13,7 @@
 #include "sourceutil.h"
 #include "const.h"
 #include "vthook.h"
+#include "exit.h"
 #include "sdk/client.h"
 #include "sdk/engine.h"
 #include "sdk/panel.h"
@@ -121,12 +122,7 @@ static void hooked_paint(IPanel* thisptr, VPANEL vpanel, bool repaint, bool forc
 		runhacks(paint_hacks, "PaintTraverse");
 }
 
-void basehook::init()
-{
-	createmove_hook.hook(ifs::client, 21, hooked_createmove);
-	paint_hook.hook(ifs::panel, 40 + 2, hooked_paint);
-}
-void basehook::unload()
+static void unload()
 {
 	createmove_hook.unhook();
 	paint_hook.unhook();
@@ -134,5 +130,10 @@ void basehook::unload()
 	postmove_hacks.clear();
 	paint_hacks.clear();
 }
-
+void basehook::init()
+{
+	createmove_hook.hook(ifs::client, 21, hooked_createmove);
+	paint_hook.hook(ifs::panel, 40 + 2, hooked_paint);
+	exit::handle(unload);
+}
 } /* namespace skim */

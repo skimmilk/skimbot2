@@ -17,7 +17,6 @@ class spin
 {
 public:
 	static void init();
-	static void unload();
 };
 
 } /* namespace skim */

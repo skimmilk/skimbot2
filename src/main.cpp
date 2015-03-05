@@ -30,21 +30,12 @@ extern "C" void libmain()
 		skim::window("Could not load");
 
 	skim::exit::init();
-
 	skim::cvar_hook::init();
-	skim::exit::handle(skim::cvar_hook::unload);
-
 	skim::basehook::init();
-	skim::exit::handle(skim::basehook::unload);
 
 	skim::trigger::init();
-	skim::exit::handle(skim::trigger::unload);
-
 	skim::bhop::init();
-	skim::exit::handle(skim::bhop::unload);
-
 	skim::spin::init();
-	skim::exit::handle(skim::spin::unload);
 
 	// Test netvars
 	dumpall = new ConCommand("dumpall", skim::netvar::dumpnets);

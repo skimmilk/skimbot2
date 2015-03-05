@@ -12,6 +12,7 @@
 #include "tfplayer.h"
 #include "trace.h"
 #include "tfdebug.h"
+#include "exit.h"
 #include "sdk/cvar.h"
 
 namespace skim
@@ -52,18 +53,18 @@ static void frame(CUserCmd* cmd)
 	}
 }
 
+static void unload()
+{
+	delete enabled;
+	delete contfdebug;
+}
 void trigger::init()
 {
 	enabled = new ConVar(PREFIX "trigger_auto", "0", 0, "Enable or disable the triggerbot");
 	contfdebug = new ConCommand(PREFIX "trigger_debug",
 			[](){do_debug = true;}, "Get information of the player pointed at");
 	basehook::post_move(frame, "trigger");
-}
-
-void trigger::unload()
-{
-	delete enabled;
-	delete contfdebug;
+	exit::handle(unload);
 }
 
 } /* namespace skim */

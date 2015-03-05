@@ -16,7 +16,6 @@ class bhop
 public:
 	// Does the obvious and adds itself to the basehook
 	static void init();
-	static void unload();
 };
 
 } /* namespace skim */

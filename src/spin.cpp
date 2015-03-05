@@ -10,6 +10,7 @@
 #include "const.h"
 #include "basehook.h"
 #include "trig.h"
+#include "exit.h"
 #include "sdk/cvar.h"
 #include "sdk/usercmd.h"
 
@@ -53,6 +54,13 @@ static void frame(CUserCmd* cmd)
 	}
 }
 
+static void unload()
+{
+	delete spin_enabled;
+	delete spin_amount;
+	delete spin_rand;
+	delete spin_aa;
+}
 void spin::init()
 {
 	spin_enabled = new ConVar(PREFIX "spin", "0", 0, "Enable spinbot");
@@ -61,14 +69,7 @@ void spin::init()
 	spin_aa = new ConVar(PREFIX "spin_aa", "0", 0, "Reverse your hitbox");
 
 	basehook::post_move(frame, "spinbot");
-}
-
-void spin::unload()
-{
-	delete spin_enabled;
-	delete spin_amount;
-	delete spin_rand;
-	delete spin_aa;
+	exit::handle(unload);
 }
 
 } /* namespace skim */

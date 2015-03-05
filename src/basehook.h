@@ -23,7 +23,6 @@ class basehook
 {
 public:
 	static void init();
-	static void unload();
 
 	// Call passed function on hook
 	static void pre_move(premove_fn, const std::string& hackname);
