@@ -95,62 +95,8 @@ struct matrix3x4_t
 typedef float vec3_t[3];
 typedef float vec_t;
 #define MAXSTUDIOBONES		128		// total bones actually used
-#define RAD2DEG( x  )  ( (float)(x) * (float)(180.f / M_PI_F) )
-
-typedef struct
-{
-	int					id;
-	int					version;
-
-	char				name[64];
-	int					length;
-
-	vec3_t				eyeposition;	// ideal eye position
-	vec3_t				min;			// ideal movement hull size
-	vec3_t				max;
-
-	vec3_t				bbmin;			// clipping bounding box
-	vec3_t				bbmax;
-
-	int					flags;
-
-	int					numbones;			// bones
-	int					boneindex;
-
-	int					numbonecontrollers;		// bone controllers
-	int					bonecontrollerindex;
-
-	int					numhitboxes;			// complex bounding boxes
-	int					hitboxindex;
-
-	int					numseq;				// animation sequences
-	int					seqindex;
-
-	int					numseqgroups;		// demand loaded sequences
-	int					seqgroupindex;
-
-	int					numtextures;		// raw textures
-	int					textureindex;
-	int					texturedataindex;
-
-	int					numskinref;			// replaceable textures
-	int					numskinfamilies;
-	int					skinindex;
-
-	int					numbodyparts;
-	int					bodypartindex;
-
-	int					numattachments;		// queryable attachable points
-	int					attachmentindex;
-
-	int					soundtable;
-	int					soundindex;
-	int					soundgroups;
-	int					soundgroupindex;
-
-	int					numtransitions;		// animation node to animation node transition graph
-	int					transitionindex;
-} studiohdr_t;
+#define BONE_USED_BY_HITBOX			0x00000100	// bone (or child) is used by a hit box
+#define RAD2DEG( x  )  ( (float)(x) * (float)(180.f / M_PI) )
 
 Vector AngleVectors(const QAngle& angle);
 void VectorAdd( const Vector& a, const Vector& b, Vector& c );
@@ -162,6 +108,7 @@ void VectorMultiply( const Vector& a, const Vector& b, Vector& c );
 void VectorTransform (const float *in1, const matrix3x4_t& in2, float *out);
 vec_t DotProduct(const Vector& a, const Vector& b);
 vec_t DotProduct(const vec_t *v1, const vec_t *v2);
+void MatrixAngles( const matrix3x4_t& matrix, float *angles );
 
 // Math routines done in optimized assembly math package routines
 void inline SinCos( float radians, float *sine, float *cosine )
@@ -176,6 +123,9 @@ inline void VectorTransform (const Vector& in1, const matrix3x4_t &in2, Vector &
 {
 	VectorTransform( &in1.x, in2, &out.x );
 }
-
+inline void MatrixAngles( const matrix3x4_t &matrix, QAngle &angles )
+{
+	MatrixAngles( matrix, &angles.x );
+}
 
 #endif /* MATH_H_ */

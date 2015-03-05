@@ -21,3 +21,4 @@ src/bhop.o
 src/trig.o
 src/spin.o
 src/sdk/math.o
+src/skeltal.o
