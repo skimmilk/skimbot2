@@ -113,6 +113,7 @@ struct matrix3x4_t
 };
 
 Vector AngleVectors(const QAngle& angle);
+void VectorAngles( const Vector& forward, QAngle &angles );
 void VectorAdd( const Vector& a, const Vector& b, Vector& c );
 void VectorSubtract( const Vector& a, const Vector& b, Vector& c );
 void VectorClear(Vector& a);
