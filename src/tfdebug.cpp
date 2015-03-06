@@ -34,10 +34,16 @@ void tfdebug::playerinfo(int index)
 		econ(NAME "No entity found at specified index");
 		return;
 	}
+	tfplayer* player = (tfplayer*)ent->GetBaseEntity();
+
+	if (!player->is_player())
+	{
+		econ(NAME "Entity is not a player");
+		return;
+	}
 
 	try
 	{
-		tfplayer* player = (tfplayer*)ent->GetBaseEntity();
 		Vector pos = ent->GetAbsOrigin();
 		Vector pos2 = player->m_vecOrigin();
 		Vector eye = player->m_vecViewOffset();
@@ -60,6 +66,17 @@ void tfdebug::playerinfo(int index)
 		con("m_nPlayerCond:\t\t" + flags.to_string());
 		con("m_nPlayerState:\t\t" + state.to_string());
 		con("m_lifeState:\t\t" + std::to_string(player->m_lifeState()));
+
+		// Get the weapon
+		con("Weapon information");
+		int whandle = player->m_hActiveWeapon();
+		con("m_hActiveWeapon:\t\t" + std::to_string(whandle) + " : " +
+				std::to_string(whandle & 0x0fff));
+
+		tfweapon* weapon = player->weapon();
+		con("m_iItemDefinitionIndex:\t\t" + std::to_string(weapon->m_iItemDefinitionIndex()));
+		con("m_flNextPrimaryAttack:\t\t" + std::to_string(weapon->m_flNextPrimaryAttack()));
+		con("Weapon class name: " + std::string(weapon->GetClientClass()->m_pNetworkName));
 	}
 	catch (...)
 	{

@@ -64,6 +64,9 @@ enum class bonepos { MAX, MIN, MIDDLE };
 
 
 #define DEFNETVAR(result, name, ...) result& name() { return netvar::net<_id, result>(this, __VA_ARGS__, #name); }
+
+class tfweapon;
+
 class tfplayer : public IClientEntity
 {
 public:
@@ -87,6 +90,9 @@ public:
 	DEFNETVAR(int, m_iDecapitations, "CTFPlayer", "m_Shared");
 	DEFNETVAR(int, m_iRevengeCrits, "CTFPlayer", "m_Shared");
 
+	bool is_player() { return entindex() > 0 || entindex() < 32; }
+	bool is_alive() { return m_nPlayerCond() & 2; }
+
 	// LOCAL ONLY CBasePlayer.localdata.m_vecViewOffset[0]
 	Vector& m_vecViewOffset()
 	{
@@ -100,17 +106,24 @@ public:
 		VectorAdd(pos, off, ret);
 		return ret;
 	}
+	tfweapon* weapon()
+	{
+		return (tfweapon*)ifs::entities->GetClientEntity(m_hActiveWeapon() & 0x0fff);
+	}
 };
 
-class tfweapon
+class tfweapon : public IClientEntity
 {
 public:
-	DEFNETVAR(float, m_flNextPrimaryAttack, "CBaseCombatWeapon", "LocalActiveWeaponData", "m_flNextPrimaryAttack");
+	DEFNETVAR(float, m_flNextPrimaryAttack, "CBaseCombatWeapon", "LocalActiveWeaponData");
+	DEFNETVAR(float, m_flNextSecondaryAttack, "CBaseCombatWeapon", "LocalActiveWeaponData");
 	DEFNETVAR(int, m_iState, "CBaseCombatWeapon");
+	DEFNETVAR(int, m_iItemDefinitionIndex, "CBaseCombatWeapon", "m_AttributeManager", "m_Item");
 	DEFNETVAR(int, m_nKillComboCount, "CTFWeaponBase");
+	DEFNETVAR(bool, m_bReadyToBackstab, "CTFKnife");
 };
 
-class tfobject
+class tfobject : public IClientEntity
 {
 public:
 	DEFNETVAR(int, m_iHealth, "CBaseObject");
@@ -118,7 +131,7 @@ public:
 	DEFNETVAR(int, m_fObjectFlags, "CBaseObject");
 };
 
-class tfprojectile
+class tfprojectile : public IClientEntity
 {
 public:
 	DEFNETVAR(Vector, m_vecOrigin, "CBaseProjectile");
