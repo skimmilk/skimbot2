@@ -17,7 +17,7 @@ namespace skim
 
 enum class tfclass : int { scout = 1, sniper, soldier, demoman, medic, heavy, pyro, spy, engineer };
 // tfslot::menu describes the engineer's build/destroy and the spy's disguise menus
-enum class tfslot : int { primary, secondary, melee, menu };
+enum class tfslot : int { primary = 1, secondary, melee, menu };
 enum class tfhitbox : int
 {
     HITBOX_ENGINEER_HIP_R = 14,
