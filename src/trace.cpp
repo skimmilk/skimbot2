@@ -64,7 +64,7 @@ tfplayer* trace::sight(const Vector& start, const QAngle& viewangle, int idignor
 
 	if (!aim ||
 			// Did it hit a player?
-			aim->entindex() < 0 || aim->entindex() > 32)
+			aim->entindex() < 1 || aim->entindex() > 32)
 		return 0;
 	return (tfplayer*)aim;
 }
