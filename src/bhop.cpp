@@ -13,6 +13,7 @@
 #include "basehook.h"
 #include "sourceutil.h"
 #include "exit.h"
+#include "ifs.h"
 #include "sdk/cvar.h"
 #include "sdk/usercmd.h"
 #include "sdk/engine.h"

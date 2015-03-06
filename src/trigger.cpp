@@ -13,6 +13,8 @@
 #include "trace.h"
 #include "tfdebug.h"
 #include "exit.h"
+#include "ifs.h"
+#include "sdk/engine.h"
 #include "sdk/cvar.h"
 
 namespace skim

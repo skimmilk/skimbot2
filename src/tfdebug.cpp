@@ -77,6 +77,7 @@ void tfdebug::playerinfo(int index)
 		con("m_iItemDefinitionIndex:\t\t" + std::to_string(weapon->m_iItemDefinitionIndex()));
 		con("m_flNextPrimaryAttack:\t\t" + std::to_string(weapon->m_flNextPrimaryAttack()));
 		con("Weapon class name: " + std::string(weapon->GetClientClass()->m_pNetworkName));
+		con("Slot:\t\t" + std::to_string((int)weapon->slot()));
 	}
 	catch (...)
 	{

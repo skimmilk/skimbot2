@@ -24,6 +24,9 @@ public:
 	static int netoffset(const char* classname, const char* varname,
 			RecvProp** prop = nullptr);
 
+	// Get the ID of a class by name
+	static int class_id_search(const char* name);
+
 	// Dump offsets to console
 	static void dumpnets();
 	// Dump the names of all classes
@@ -32,6 +35,7 @@ public:
 	static void dumpnets(const char* classname);
 
 	// Weak hashing system, patent holder me don't use or ill sue
+	// C++ generates a new function for every unique template argument
 #define _id (__LINE__ * 12345 + __COUNTER__ * 54321)
 
 	// Only searches for offset once and stores the value for later
@@ -51,6 +55,16 @@ public:
 	{
 		int offset = off<put__id_here>(args...);
 		return *(Type*)((char*)obj + offset);
+	}
+
+	// Get the ID of a class by name
+	template <int put__id_here>
+	static int classid(const char* name)
+	{
+		static int result = 0;
+		if (!result)
+			result = class_id_search(name);
+		return result;
 	}
 };
 

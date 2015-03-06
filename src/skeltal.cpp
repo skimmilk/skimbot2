@@ -7,6 +7,7 @@
 
 #include "skeltal.h"
 
+#include "ifs.h"
 #include "sdk/model.h"
 
 namespace skim

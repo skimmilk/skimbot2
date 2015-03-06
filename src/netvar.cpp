@@ -76,6 +76,13 @@ int netvar::netoffset(const char* classname, const char* varname, RecvProp** pro
 	return netoffset(classname, std::vector<const char*>{varname}, prop);
 }
 
+int netvar::class_id_search(const char* name)
+{
+	for (ClientClass* cclass = ifs::client->GetAllClasses(); cclass; cclass = cclass->m_pNext)
+		if (!strcmp(cclass->m_pNetworkName, name))
+			return cclass->m_ClassID;
+	return 0;
+}
 static void dumptable(RecvTable* table, const std::string& previous, int sum = 0)
 {
 	for (int i = 0; i < table->m_nProps; i++)

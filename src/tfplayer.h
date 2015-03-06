@@ -8,16 +8,16 @@
 #ifndef TFPLAYER_H_
 #define TFPLAYER_H_
 
-#include "ifs.h"
 #include "netvar.h"
 #include "sdk/common.h"
-#include "sdk/engine.h"
 #include "sdk/cliententity.h"
 
 namespace skim
 {
 
 enum class tfclass : int { scout = 1, sniper, soldier, demoman, medic, heavy, pyro, spy, engineer };
+// tfslot::menu describes the engineer's build/destroy and the spy's disguise menus
+enum class tfslot : int { primary, secondary, melee, menu };
 enum class tfhitbox : int
 {
     HITBOX_ENGINEER_HIP_R = 14,
@@ -60,8 +60,6 @@ enum class tfhitbox : int
 
     HITBOX_ORIGIN = -1
 };
-enum class bonepos { MAX, MIN, MIDDLE };
-
 
 #define DEFNETVAR(result, name, ...) result& name() { return netvar::net<_id, result>(this, __VA_ARGS__, #name); }
 
@@ -70,7 +68,7 @@ class tfweapon;
 class tfplayer : public IClientEntity
 {
 public:
-	inline static tfplayer* me() { return (tfplayer*) ifs::entities->GetClientEntity(ifs::engine->GetLocalPlayer()); }
+	static tfplayer* me();
 
 	DEFNETVAR(int, m_iHealth, "CBasePlayer");
 	DEFNETVAR(int, m_lifeState, "CBasePlayer");
@@ -90,8 +88,9 @@ public:
 	DEFNETVAR(int, m_iDecapitations, "CTFPlayer", "m_Shared");
 	DEFNETVAR(int, m_iRevengeCrits, "CTFPlayer", "m_Shared");
 
-	bool is_player() { return entindex() > 0 || entindex() < 32; }
+	bool is_player() { return entindex() > 0 || entindex() <= 32; }
 	bool is_alive() { return m_nPlayerCond() & 2; }
+	bool is_drawable() { return is_alive() && !this->IsDormant(); }
 
 	// LOCAL ONLY CBasePlayer.localdata.m_vecViewOffset[0]
 	Vector& m_vecViewOffset()
@@ -106,10 +105,8 @@ public:
 		VectorAdd(pos, off, ret);
 		return ret;
 	}
-	tfweapon* weapon()
-	{
-		return (tfweapon*)ifs::entities->GetClientEntity(m_hActiveWeapon() & 0x0fff);
-	}
+	// Get the weapon of this player
+	tfweapon* weapon();
 };
 
 class tfweapon : public IClientEntity
@@ -121,6 +118,8 @@ public:
 	DEFNETVAR(int, m_iItemDefinitionIndex, "CBaseCombatWeapon", "m_AttributeManager", "m_Item");
 	DEFNETVAR(int, m_nKillComboCount, "CTFWeaponBase");
 	DEFNETVAR(bool, m_bReadyToBackstab, "CTFKnife");
+
+	tfslot slot();
 };
 
 class tfobject : public IClientEntity

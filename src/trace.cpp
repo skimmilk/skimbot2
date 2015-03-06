@@ -11,6 +11,7 @@
 #include "ifs.h"
 #include "sdk/valvetrace.h"
 #include "sdk/math.h"
+#include "sdk/engine.h"
 
 namespace skim
 {
