@@ -23,8 +23,6 @@ class trace
 public:
 	// Returns what the ray hits (ray has MASK_SHOT)
 	static IClientEntity* ray(const Vector& start, const QAngle& aim, int ignore);
-	// Returns the the player in the line of sight
-	static tfplayer* sight(const Vector& start, const QAngle& viewangle, int idignore);
 	// Determines if player can see player, quick
 	static bool can_see_fast(const Vector& start, tfplayer* pl);
 };

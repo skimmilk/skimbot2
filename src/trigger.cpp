@@ -26,12 +26,12 @@ bool do_debug;
 static int enemy(CUserCmd* cmd)
 {
 	tfplayer* me = tfplayer::me();
-	tfplayer* sight = trace::sight(me->local_eyes(), cmd->viewangles, ifs::engine->GetLocalPlayer());
+	tfplayer* sight = (tfplayer*)trace::ray(me->local_eyes(), cmd->viewangles, ifs::engine->GetLocalPlayer());
 
 	if (!sight)
 		return 0;
 
-	if (sight->m_iTeamNum() > 1 && sight->m_iTeamNum() != me->m_iTeamNum())
+	if (sight->is_player() && sight->m_iTeamNum() > 1 && sight->m_iTeamNum() != me->m_iTeamNum())
 	{
 		return sight->entindex();
 	}
