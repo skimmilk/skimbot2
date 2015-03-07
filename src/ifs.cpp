@@ -150,11 +150,25 @@ static bool load_surface(const std::string& directory)
 			"55  89 E5  85 C0  74 14  8B 08  89 45 08  5D  8B 81 38 01 00 00");
 	if (!offset)
 	{
-		window("Could not locate CClientReplayImp::PlaySound()");
+		window("Could not locate surface");
 		return false;
 	}
 
 	ifs::surface = **(ISurface***)(offset - 4);
+	return true;
+}
+static bool load_globals(const std::string& directory)
+{
+	// String "passedresult" will get you here in CHudVote::MsgFunc_VotePass
+	char* offset = (char*)skim::sigscan(directory,
+			"FF 91 90 03 00 00  A1");
+	if (!offset)
+	{
+		window("Could not locate CGlobalVarsBase");
+		return false;
+	}
+	offset += 7;
+	ifs::globals = **(CGlobalVarsBase***)offset;
 	return true;
 }
 
@@ -195,7 +209,8 @@ bool ifs::load()
 			!load_gameres(directory) ||
 			!load_getplayer(directory) ||
 			!load_input() ||
-			!load_surface(directory))
+			!load_surface(directory) ||
+			!load_globals(directory))
 		return false;
 
 	return true;
