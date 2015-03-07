@@ -89,7 +89,7 @@ public:
 	DEFNETVAR(int, m_iRevengeCrits, "CTFPlayer", "m_Shared");
 
 	bool is_player() { return entindex() > 0 || entindex() <= 32; }
-	bool is_alive() { return m_nPlayerCond() & 2; }
+	bool is_alive() { return !(m_nPlayerCond() & 2); }
 	bool is_drawable() { return is_alive() && !this->IsDormant(); }
 
 	// LOCAL ONLY CBasePlayer.localdata.m_vecViewOffset[0]
