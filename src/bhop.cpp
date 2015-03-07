@@ -40,8 +40,8 @@ static void frame(CUserCmd* cmd)
 	else if (first && jumping)
 		first = false;
 	// If we are not on the ground, disable the jump button
-	else if (jumping && henable->m_nValue && !grounded)
-		cmd->buttons &= ~IN_JUMP;
+	else if (jumping && henable->m_nValue)
+		cmd->buttons &= grounded? ~IN_DUCK : ~IN_JUMP;
 
 	// Auto-strafe
 	Vector here = tfplayer::me()->GetAbsOrigin();
@@ -50,7 +50,7 @@ static void frame(CUserCmd* cmd)
 		Vector difference;
 		VectorSubtract(here, last, difference);
 		difference.z = 0;
-		float speed = sqrt(difference.LengthSqr());
+		float speed = sqrtf(difference.LengthSqr());
 
 		if (speed > 1.)
 		{

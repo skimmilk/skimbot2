@@ -30,12 +30,12 @@ void trig::moveangle(float& forward, float& side, const float& angle, const floa
 	if (fabsf(fabsf(angle_newmove) - 90.f) < .1)
 		forward = 0;
 	else
-		forward = speed * cos(angle_newmove / 180.f * M_PI);
+		forward = speed * cosf(angle_newmove / 180.f * M_PI);
 
 	if (fabsf(angle - 180.f) < .1 && fabsf(side) < .1)
 		side = 0;
 	else
-		side = speed * sin(angle_newmove / 180.f * M_PI);
+		side = speed * sinf(angle_newmove / 180.f * M_PI);
 }
 void trig::moveangle(CUserCmd* cmd, const float& y)
 {

@@ -85,12 +85,12 @@ Vector AngleVectors(const QAngle& angle)
 {
 	// Convert pitch, yaw, roll to radians and calculate normalized vector
 	float a = angle.y * (M_PI*2 / 360);
-	float sy = sin(a);
-	float cy = cos(a);
+	float sy = sinf(a);
+	float cy = cosf(a);
 
 	a = angle.x * (M_PI*2 / 360);
-	float sp = sin(a);
-	float cp = cos(a);
+	float sp = sinf(a);
+	float cp = cosf(a);
 
 	return (Vector){cp*cy, cp*sy, -sp};
 }
@@ -108,12 +108,12 @@ void VectorAngles( const Vector& forward, QAngle &angles )
 	}
 	else
 	{
-		yaw = (atan2(forward[1], forward[0]) * 180 / M_PI);
+		yaw = (atan2f(forward[1], forward[0]) * 180 / M_PI);
 		if (yaw < 0)
 			yaw += 360;
 
-		tmp = sqrt(forward[0]*forward[0] + forward[1]*forward[1]);
-		pitch = (atan2(-forward[2], tmp) * 180 / M_PI);
+		tmp = sqrtf(forward[0]*forward[0] + forward[1]*forward[1]);
+		pitch = (atan2f(-forward[2], tmp) * 180 / M_PI);
 		if (pitch < 0)
 			pitch += 360;
 	}
