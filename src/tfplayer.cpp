@@ -26,6 +26,10 @@ tfweapon* tfplayer::weapon()
 {
 	return (tfweapon*)ifs::entities->GetClientEntity(m_hActiveWeapon() & 0x0fff);
 }
+bool tfplayer::is_player()
+{
+	return entindex() > 0 && entindex() <= ifs::engine->GetMaxClients();
+}
 
 // Register weapon and slot
 #define REGWEP(str, slot) classid[netvar::class_id_search(#str)] = (tfslot)slot
