@@ -61,6 +61,14 @@ IClientEntity* trace::ray(const Vector& start, const QAngle& aim, int ignore)
 
 	return tr.m_pEnt;
 }
+tfplayer* trace::sight(const Vector& start, const QAngle& viewangle, int idignore)
+{
+	tfplayer* aim = (tfplayer*)ray(start, viewangle, idignore);
+
+	if (!aim || !aim->is_player())
+		return 0;
+	return aim;
+}
 
 bool trace::can_see_fast(const Vector& start, tfplayer* pl)
 {
