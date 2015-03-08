@@ -36,7 +36,6 @@ public:
 		return TRACE_EVERYTHING;
 	}
 
-private:
 	int ignore;
 };
 
@@ -44,7 +43,10 @@ IClientEntity* trace::ray(const Vector& start, const QAngle& aim, int ignore)
 {
 	Vector direction = AngleVectors(aim);
 
-	player_filter* filter = new player_filter(ignore);
+	static player_filter* filter;
+	if (!filter)
+		filter = new player_filter(ignore);
+	filter->ignore = ignore;
 
 	Ray_t ray;
 	Vector end {
