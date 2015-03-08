@@ -78,7 +78,7 @@ public:
 	DEFNETVAR(int, m_hActiveWeapon, "CBasePlayer");
 	DEFNETVAR(int, m_bGlowEnabled, "CBasePlayer");
 
-	DEFNETVAR(int, m_iClass, "CTFPlayer", "m_PlayerClass");
+	DEFNETVAR(tfclass, m_iClass, "CTFPlayer", "m_PlayerClass");
 	DEFNETVAR(int, m_nPlayerCond, "CTFPlayer", "m_Shared");
 	DEFNETVAR(bool, m_bJumping, "CTFPlayer", "m_Shared");
 	DEFNETVAR(int, m_nPlayerState, "CTFPlayer", "m_Shared");

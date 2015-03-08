@@ -101,7 +101,7 @@ static void init()
 	REGWEPNODMG(CTFMedigunShield);
 	REGWEP(CWeaponMedigun, 2);
 	REGWEPNODMG(CWeaponMedigun);
-	REGWEP(CTFMechanicalArm, 3);
+	REGWEP(CTFMechanicalArm, 2);
 	REGWEP(CTFLunchBox_Drink, 2);
 	REGWEP(CTFLunchBox, 2);
 	REGWEP(CTFKnife, 3);
@@ -161,7 +161,7 @@ bool tfweapon::damaging()
 	if (!initialized)
 		init();
 
-	return weapon_streaming.count(this->GetClientClass()->m_ClassID);
+	return !weapon_nodmg.count(this->GetClientClass()->m_ClassID);
 }
 
 }

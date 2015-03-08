@@ -58,7 +58,7 @@ void tfdebug::playerinfo(int index)
 	con("m_iHealth:\t\t" + std::to_string(player->m_iHealth()));
 
 	con("m_iTeamNum:\t\t" + std::to_string(player->m_iTeamNum()));
-	con("m_iClass:\t\t" + std::to_string(player->m_iClass()));
+	con("m_iClass:\t\t" + std::to_string((int)player->m_iClass()));
 	con("m_nDisguiseClass:\t\t" + std::to_string(player->m_nDisguiseClass()));
 
 	con("m_nPlayerCond:\t\t" + std::to_string(player->m_nPlayerCond()));
