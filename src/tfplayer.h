@@ -135,6 +135,8 @@ public:
 	tfslot slot();
 	// Returns true if this weapon is a streaming weapon (flamethrower, pistol, minigun, etc.)
 	bool streaming();
+	// Can this weapon can do damage
+	bool damaging();
 };
 
 class tfobject : public IClientEntity

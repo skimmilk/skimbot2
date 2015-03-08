@@ -81,8 +81,9 @@ void tfdebug::playerinfo(int index)
 	con("m_iReloadMode:\t\t" + std::to_string(weapon->m_iReloadMode()));
 	con("reloading:\t\t" + std::to_string(weapon->m_bInReload()));
 	con("Weapon class name: " + std::string(weapon->GetClientClass()->m_pNetworkName));
-	con("Slot:\t\t" + std::to_string((int)weapon->slot()));
-	con("Streaming:\t\t" + std::to_string(weapon->streaming()));
+	con("Slot/streaming/damaging:\t\t" + std::to_string((int)weapon->slot()) +
+			std::to_string(weapon->streaming()) +
+			std::to_string(weapon->damaging()));
 }
 
 void tfdebug::localinfo()

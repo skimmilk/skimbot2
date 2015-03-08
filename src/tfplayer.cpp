@@ -31,14 +31,18 @@ tfweapon* tfplayer::weapon()
 #define REGWEP(str, slot) classid[netvar::class_id_search(#str)] = (tfslot)slot
 // Register weapon information that it streams (for critical hits)
 #define REGWEPSTREAM(str) weapon_streaming.insert(netvar::class_id_search(#str))
+// Weapon does not do any damage
+#define REGWEPNODMG(str) weapon_nodmg.insert(netvar::class_id_search(#str))
 
 // First parameter is class ID, second slot
 std::unordered_map<int, tfslot> classid;
 std::unordered_set<int> weapon_streaming;
+std::unordered_set<int> weapon_nodmg;
 bool initialized;
 
 static void init()
 {
+	initialized = true;
 	REGWEP(CTFWearableRobotArm, 3);
 	REGWEP(CTFRobotArm, 3);
 	REGWEP(CTFWrench, 3);
@@ -79,16 +83,24 @@ static void init()
 	REGWEPSTREAM(CTFPistol);
 	REGWEP(CTFPipebombLauncher, 2);
 	REGWEP(CTFWeaponPDA_Spy, 4);
+	REGWEPNODMG(CTFWeaponPDA_Spy);
 	REGWEP(CTFWeaponPDA_Engineer_Destroy, 4);
+	REGWEPNODMG(CTFWeaponPDA_Engineer_Destroy);
 	REGWEP(CTFWeaponPDA_Engineer_Build, 4);
+	REGWEPNODMG(CTFWeaponPDA_Engineer_Build);
 	REGWEP(CTFWeaponPDAExpansion_Teleporter, 4);
+	REGWEPNODMG(CTFWeaponPDAExpansion_Teleporter);
 	REGWEP(CTFWeaponPDAExpansion_Dispenser, 4);
+	REGWEPNODMG(CTFWeaponPDAExpansion_Dispenser);
 	REGWEP(CTFWeaponPDA, 4);
+	REGWEPNODMG(CTFWeaponPDA);
 	REGWEP(CTFParticleCannon, 1);
 	REGWEP(CTFMinigun, 1);
 	REGWEPSTREAM(CTFMinigun);
 	REGWEP(CTFMedigunShield, 2);
+	REGWEPNODMG(CTFMedigunShield);
 	REGWEP(CWeaponMedigun, 2);
+	REGWEPNODMG(CWeaponMedigun);
 	REGWEP(CTFMechanicalArm, 3);
 	REGWEP(CTFLunchBox_Drink, 2);
 	REGWEP(CTFLunchBox, 2);
@@ -97,6 +109,7 @@ static void init()
 	REGWEP(CTFJarMilk, 2);
 	REGWEP(CTFJar, 2);
 	REGWEP(CTFWeaponInvis, 4);
+	REGWEPNODMG(CTFWeaponInvis);
 	REGWEP(CTFCannon, 1);
 	REGWEP(CTFGrenadeLauncher, 1);
 	REGWEP(CTFFlareGun_Revenge, 2);
@@ -109,6 +122,7 @@ static void init()
 	REGWEP(CTFCompoundBow, 1);
 	REGWEP(CTFClub, 3);
 	REGWEP(CTFBuffItem, 2);
+	REGWEPNODMG(CTFBuffItem);
 	REGWEP(CTFStickBomb, 2);
 	REGWEP(CTFBottle, 3);
 	REGWEP(CTFBonesaw, 3);
@@ -118,15 +132,13 @@ static void init()
 	REGWEP(CTFBat_Wood, 3);
 	REGWEP(CTFBat_Fish, 3);
 	REGWEP(CTFBat, 3);
-	REGWEP(CTFWeaponBuilder, 2);
+	REGWEP(CTFWeaponBuilder, 4);
+	REGWEPNODMG(CTFWeaponBuilder);
 }
 tfslot tfweapon::slot()
 {
 	if (!initialized)
-	{
 		init();
-		initialized = true;
-	}
 
 	auto needle = classid.find(this->GetClientClass()->m_ClassID);
 	if (needle == classid.end())
@@ -140,10 +152,14 @@ tfslot tfweapon::slot()
 bool tfweapon::streaming()
 {
 	if (!initialized)
-	{
 		init();
-		initialized = true;
-	}
+
+	return weapon_streaming.count(this->GetClientClass()->m_ClassID);
+}
+bool tfweapon::damaging()
+{
+	if (!initialized)
+		init();
 
 	return weapon_streaming.count(this->GetClientClass()->m_ClassID);
 }
