@@ -54,7 +54,7 @@ int netvar::netoffset(const char* classname, const std::vector<const char*>& var
 
 	// Found the correct class
 	RecvTable* table = cclass->m_pRecvTable;
-	RecvProp* result;
+	RecvProp* result = 0;
 
 	// Combine the offsets in vars
 	for (uint i = 0; i < vars.size(); i++)

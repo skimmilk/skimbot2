@@ -116,8 +116,8 @@ bool ConVar::IsFlagSet(int flag) const
 void ConVar::InternalSetValue(const char* str)
 {
 	// Need this for onchange later
-	char* cold;
-	float fold;
+	char* cold = 0;
+	float fold = 0;
 	if (m_fnChangeCallback)
 	{
 		fold = m_fValue;
