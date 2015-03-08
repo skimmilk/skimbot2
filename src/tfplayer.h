@@ -112,14 +112,29 @@ public:
 class tfweapon : public IClientEntity
 {
 public:
+	DEFNETVAR(int, m_iClip1, "CBaseCombatWeapon", "LocalWeaponData");
+	DEFNETVAR(int, m_iClip2, "CBaseCombatWeapon", "LocalWeaponData");
 	DEFNETVAR(float, m_flNextPrimaryAttack, "CBaseCombatWeapon", "LocalActiveWeaponData");
 	DEFNETVAR(float, m_flNextSecondaryAttack, "CBaseCombatWeapon", "LocalActiveWeaponData");
 	DEFNETVAR(int, m_iState, "CBaseCombatWeapon");
 	DEFNETVAR(int, m_iItemDefinitionIndex, "CBaseCombatWeapon", "m_AttributeManager", "m_Item");
 	DEFNETVAR(int, m_nKillComboCount, "CTFWeaponBase");
 	DEFNETVAR(bool, m_bReadyToBackstab, "CTFKnife");
+	// m_iReloadMode 1 means mandatory reload (usually), 2 = can fire while reloading (usually)
+	// Deals with primary weapons (usually)
+	DEFNETVAR(int, m_iReloadMode, "CTFWeaponBase");
+	// Deals with secondary weapons (usually)
+	char& m_bInReload()
+	{
+		int offset = netvar::off<_id>("CBaseCombatWeapon", "LocalActiveWeaponData", "m_flNextPrimaryAttack") + 12;
+		char* ptr = (char*)this;
+		ptr += offset;
+		return *ptr;
+	}
 
 	tfslot slot();
+	// Returns true if this weapon is a streaming weapon (flamethrower, pistol, minigun, etc.)
+	bool streaming();
 };
 
 class tfobject : public IClientEntity

@@ -8,10 +8,12 @@
 #include "tfplayer.h"
 
 #include <unordered_map>
+#include <unordered_set>
 #include "ifs.h"
 #include "const.h"
 #include "sourceutil.h"
 #include "sdk/engine.h"
+#include "sdk/vars.h"
 
 namespace skim
 {
@@ -26,10 +28,14 @@ tfweapon* tfplayer::weapon()
 }
 
 // Register weapon and slot
-#define REGWEP(str, slot) classid[netvar::classid<_id>(#str)] = (tfslot)slot;
+#define REGWEP(str, slot) classid[netvar::class_id_search(#str)] = (tfslot)slot
+// Register weapon information that it streams (for critical hits)
+#define REGWEPSTREAM(str) weapon_streaming.insert(netvar::class_id_search(#str))
 
 // First parameter is class ID, second slot
 std::unordered_map<int, tfslot> classid;
+std::unordered_set<int> weapon_streaming;
+bool initialized;
 
 static void init()
 {
@@ -37,12 +43,14 @@ static void init()
 	REGWEP(CTFRobotArm, 3);
 	REGWEP(CTFWrench, 3);
 	REGWEP(CTFSyringeGun, 1);
+	REGWEPSTREAM(CTFSyringeGun);
 	REGWEP(CTFKatana, 3);
 	REGWEP(CTFSword, 3);
 	REGWEP(CTFSniperRifleClassic, 1);
 	REGWEP(CTFSniperRifleDecap, 1);
 	REGWEP(CTFSniperRifle, 1);
 	REGWEP(CTFSMG, 2);
+	REGWEPSTREAM(CTFSMG);
 	REGWEP(CTFShovel, 3);
 	REGWEP(CTFShotgunBuildingRescue, 1);
 	REGWEP(CTFPEPBrawlerBlaster, 1);
@@ -62,9 +70,13 @@ static void init()
 	REGWEP(CTFDRGPomson, 1);
 	REGWEP(CTFRaygun, 2);
 	REGWEP(CTFPistol_ScoutSecondary, 2);
-	REGWEP(CTFPistol_ScoutPrimary, 2);
+	REGWEPSTREAM(CTFPistol_ScoutSecondary);
+	REGWEP(CTFPistol_ScoutPrimary, 1); // shortstop
+	REGWEPSTREAM(CTFPistol_ScoutPrimary);
 	REGWEP(CTFPistol_Scout, 2);
+	REGWEPSTREAM(CTFPistol_Scout);
 	REGWEP(CTFPistol, 2);
+	REGWEPSTREAM(CTFPistol);
 	REGWEP(CTFPipebombLauncher, 2);
 	REGWEP(CTFWeaponPDA_Spy, 4);
 	REGWEP(CTFWeaponPDA_Engineer_Destroy, 4);
@@ -74,6 +86,7 @@ static void init()
 	REGWEP(CTFWeaponPDA, 4);
 	REGWEP(CTFParticleCannon, 1);
 	REGWEP(CTFMinigun, 1);
+	REGWEPSTREAM(CTFMinigun);
 	REGWEP(CTFMedigunShield, 2);
 	REGWEP(CWeaponMedigun, 2);
 	REGWEP(CTFMechanicalArm, 3);
@@ -90,6 +103,7 @@ static void init()
 	REGWEP(CTFFlareGun, 2);
 	REGWEP(CTFFlameRocket, 1);
 	REGWEP(CTFFlameThrower, 1);
+	REGWEPSTREAM(CTFFlameThrower);
 	REGWEP(CTFFists, 3);
 	REGWEP(CTFFireAxe, 3);
 	REGWEP(CTFCompoundBow, 1);
@@ -108,7 +122,6 @@ static void init()
 }
 tfslot tfweapon::slot()
 {
-	static bool initialized = false;
 	if (!initialized)
 	{
 		init();
@@ -123,6 +136,16 @@ tfslot tfweapon::slot()
 		return tfslot::primary;
 	}
 	return needle->second;
+}
+bool tfweapon::streaming()
+{
+	if (!initialized)
+	{
+		init();
+		initialized = true;
+	}
+
+	return weapon_streaming.count(this->GetClientClass()->m_ClassID);
 }
 
 }
