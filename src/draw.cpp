@@ -41,26 +41,27 @@ void draw::fill_box(const point& p1, const point& p2)
 
 bool draw::world_point(const Vector& wpt, point& spt)
 {
-    float x, y, z;
-    const VMatrix& wscr = ifs::engine->WorldToScreenMatrix();
-    x = wscr[0][0] * wpt[0] + wscr[0][1] * wpt[1] + wscr[0][2] * wpt[2] + wscr[0][3];
-    y = wscr[1][0] * wpt[0] + wscr[1][1] * wpt[1] + wscr[1][2] * wpt[2] + wscr[1][3];
-    z = wscr[3][0] * wpt[0] + wscr[3][1] * wpt[1] + wscr[3][2] * wpt[2] + wscr[3][3];
+	float x, y, z;
+	const VMatrix &screen_matrix = ifs::engine->WorldToScreenMatrix();
+	x = screen_matrix[0][0] * wpt[0] + screen_matrix[0][1] * wpt[1] + screen_matrix[0][2] * wpt[2] + screen_matrix[0][3];
+	y = screen_matrix[1][0] * wpt[0] + screen_matrix[1][1] * wpt[1] + screen_matrix[1][2] * wpt[2] + screen_matrix[1][3];
+	z = screen_matrix[3][0] * wpt[0] + screen_matrix[3][1] * wpt[1] + screen_matrix[3][2] * wpt[2] + screen_matrix[3][3];
 
-    if( z < 0.001f )
-        return false;
+	if( z < 0.001f )
+		return false;
 
-    int w, h;
-    ifs::engine->GetScreenSize(w, h);
+	x /= z;
+	y /= z;
 
-    x /= z;
-    y /= z;
-
-    spt.x = w / 2;
-    spt.y = h / 2;
-    spt.x += x / 2.f * w + .5f;
-    spt.y += x / 2.f * w + .5f;
-    return true;
+	int scrw, scrh;
+	ifs::engine->GetScreenSize( scrw, scrh );
+	float cx = scrw / 2;
+	float cy = scrh / 2;
+	cx += x * 0.5f * scrw + 0.5f;
+	cy -= y * 0.5f * scrh + 0.5f;
+	spt.x = cx;
+	spt.y = cy;
+	return true;
 }
 bool draw::world_line(const Vector& pt1, const Vector& pt2)
 {
