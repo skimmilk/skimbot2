@@ -65,8 +65,6 @@ tfplayer* trace::sight(const Vector& start, const QAngle& viewangle, int idignor
 {
 	tfplayer* aim = (tfplayer*)ray(start, viewangle, idignore);
 
-	if (!aim || !aim->is_player())
-		return 0;
 	return aim;
 }
 

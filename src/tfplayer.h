@@ -63,9 +63,15 @@ enum class tfhitbox : int
 
 #define DEFNETVAR(result, name, ...) result& name() { return netvar::net<_id, result>(this, __VA_ARGS__, #name); }
 
-class tfweapon;
+enum class tftype { other, player, object, projectile };
+class tfentity : public IClientEntity
+{
+public:
+	tftype type();
+};
 
-class tfplayer : public IClientEntity
+class tfweapon;
+class tfplayer : public tfentity
 {
 public:
 	static tfplayer* me();
@@ -109,7 +115,7 @@ public:
 	tfweapon* weapon();
 };
 
-class tfweapon : public IClientEntity
+class tfweapon : public tfentity
 {
 public:
 	DEFNETVAR(int, m_iClip1, "CBaseCombatWeapon", "LocalWeaponData");
@@ -139,7 +145,7 @@ public:
 	bool damaging();
 };
 
-class tfobject : public IClientEntity
+class tfobject : public tfentity
 {
 public:
 	DEFNETVAR(int, m_iHealth, "CBaseObject");
@@ -147,7 +153,7 @@ public:
 	DEFNETVAR(int, m_fObjectFlags, "CBaseObject");
 };
 
-class tfprojectile : public IClientEntity
+class tfprojectile : public tfentity
 {
 public:
 	DEFNETVAR(Vector, m_vecOrigin, "CBaseProjectile");

@@ -33,7 +33,7 @@ static int enemy(CUserCmd* cmd)
 	if (!sight)
 		return 0;
 
-	if (sight->m_iTeamNum() != me->m_iTeamNum())
+	if (sight && sight->m_iTeamNum() != me->m_iTeamNum())
 	{
 		return sight->entindex();
 	}
@@ -51,7 +51,8 @@ static void frame(CUserCmd* cmd)
 	if (do_debug)
 	{
 		do_debug = false;
-		tfdebug::playerinfo(enemy(cmd));
+		tfdebug::playerinfo(trace::sight(tfplayer::me()->local_eyes(), cmd->viewangles,
+				ifs::engine->GetLocalPlayer())->entindex());
 	}
 }
 

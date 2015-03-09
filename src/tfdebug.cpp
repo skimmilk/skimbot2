@@ -17,15 +17,16 @@
 #include "sdk/cliententity.h"
 #include "sdk/engine.h"
 #include "sdk/vars.h"
+#include "sdk/model.h"
 
 namespace skim
 {
 
 void tfdebug::playerinfo(int index)
 {
-	if (!index)
+	if (index < 1)
 	{
-		econ(NAME "No player selected");
+		econ(NAME "No entity selected");
 		return;
 	}
 
@@ -35,11 +36,14 @@ void tfdebug::playerinfo(int index)
 		econ(NAME "No entity found at specified index");
 		return;
 	}
-	if (!player->is_player())
-	{
-		econ(NAME "Entity is not a player");
-		return;
-	}
+
+	con(player->GetClientClass()->m_pNetworkName);
+
+	const model_t* model = player->GetModel();
+	studiohdr_t* studio = ifs::model_info->GetStudiomodel(model);
+
+	con(std::string(studio->name, studio->length));
+	con(std::to_string(studio->checksum));
 
 	Vector pos = player->GetAbsOrigin();
 	Vector pos2 = player->m_vecOrigin();
@@ -64,6 +68,9 @@ void tfdebug::playerinfo(int index)
 	con("m_nPlayerCond:\t\t" + std::to_string(player->m_nPlayerCond()));
 	con("m_nPlayerState:\t\t" + std::to_string(player->m_nPlayerState()));
 	con("m_lifeState:\t\t" + std::to_string(player->m_lifeState()));
+
+	if (player->type() != tftype::player)
+		return;
 
 	int whandle = player->m_hActiveWeapon();
 	if (!whandle || whandle == -1)

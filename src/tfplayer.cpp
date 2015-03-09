@@ -32,21 +32,28 @@ bool tfplayer::is_player()
 }
 
 // Register weapon and slot
-#define REGWEP(str, slot) classid[netvar::class_id_search(#str)] = (tfslot)slot
+#define REGWEP(str, slot) weapon_slot[netvar::class_id_search(#str)] = (tfslot)slot
 // Register weapon information that it streams (for critical hits)
 #define REGWEPSTREAM(str) weapon_streaming.insert(netvar::class_id_search(#str))
 // Weapon does not do any damage
 #define REGWEPNODMG(str) weapon_nodmg.insert(netvar::class_id_search(#str))
+// Register client class type
+#define REGENT(str, type) entity_type[netvar::class_id_search(#str)] = type
 
 // First parameter is class ID, second slot
-std::unordered_map<int, tfslot> classid;
+std::unordered_map<int, tfslot> weapon_slot;
 std::unordered_set<int> weapon_streaming;
 std::unordered_set<int> weapon_nodmg;
+std::unordered_map<int, tftype> entity_type;
 bool initialized;
 
 static void init()
 {
 	initialized = true;
+	REGENT(CTFPlayer, tftype::player);
+	REGENT(CTFStunBall, tftype::projectile);
+	REGENT(CTFBall_Ornament, tftype::projectile);
+
 	REGWEP(CTFWearableRobotArm, 3);
 	REGWEP(CTFRobotArm, 3);
 	REGWEP(CTFWrench, 3);
@@ -130,8 +137,6 @@ static void init()
 	REGWEP(CTFStickBomb, 2);
 	REGWEP(CTFBottle, 3);
 	REGWEP(CTFBonesaw, 3);
-	REGWEP(CTFBall_Ornament, 3);
-	REGWEP(CTFStunBall, 3);
 	REGWEP(CTFBat_Giftwrap, 3);
 	REGWEP(CTFBat_Wood, 3);
 	REGWEP(CTFBat_Fish, 3);
@@ -144,8 +149,8 @@ tfslot tfweapon::slot()
 	if (!initialized)
 		init();
 
-	auto needle = classid.find(this->GetClientClass()->m_ClassID);
-	if (needle == classid.end())
+	auto needle = weapon_slot.find(this->GetClientClass()->m_ClassID);
+	if (needle == weapon_slot.end())
 	{
 		econ(NAME "Could not find the weapon slot for weapon " +
 				std::string(this->GetClientClass()->m_pNetworkName));
@@ -166,6 +171,17 @@ bool tfweapon::damaging()
 		init();
 
 	return !weapon_nodmg.count(this->GetClientClass()->m_ClassID);
+}
+
+tftype tfentity::type()
+{
+	if (!initialized)
+		init();
+
+	auto needle = entity_type.find(GetClientClass()->m_ClassID);
+	if (needle == entity_type.end())
+		return tftype::other;
+	return needle->second;
 }
 
 }
