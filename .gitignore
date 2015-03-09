@@ -24,3 +24,4 @@ src/sdk/math.o
 src/skeltal.o
 src/draw.o
 src/tfplayer.o
+src/esp.o
