@@ -21,23 +21,30 @@ namespace skim
 {
 
 ConVar* enabled;
+ConVar* hit_objs;
 ConCommand* contfdebug;
 bool do_debug;
 
-// Returns the index of the player in sights
-static int enemy(CUserCmd* cmd)
+static bool enemy(CUserCmd* cmd)
 {
 	tfplayer* me = tfplayer::me();
-	tfplayer* sight = trace::sight(me->local_eyes(), cmd->viewangles, ifs::engine->GetLocalPlayer());
+	tfentity* sight = trace::sight(me->local_eyes(), cmd->viewangles, ifs::engine->GetLocalPlayer());
 
-	if (!sight)
+	if (!sight && sight->entindex() < 1)
 		return 0;
 
-	if (sight && sight->m_iTeamNum() != me->m_iTeamNum())
+	switch (sight->type())
 	{
-		return sight->entindex();
+	case tftype::player:
+		return ((tfplayer*)sight)->m_iTeamNum() != me->m_iTeamNum();
+	case tftype::object:
+		return hit_objs->m_nFlags && ((tfobject*)sight)->m_iTeamNum() != me->m_iTeamNum() &&
+				(((tfobject*)sight)->object_type() == tftype_object::sentry ||
+				((tfobject*)sight)->object_type() == tftype_object::dispenser ||
+				((tfobject*)sight)->object_type() == tftype_object::teleporter);
+	default:
+		return 0;
 	}
-	return 0;
 }
 
 static void frame(CUserCmd* cmd)
@@ -60,10 +67,12 @@ static void unload()
 {
 	delete enabled;
 	delete contfdebug;
+	delete hit_objs;
 }
 void trigger::init()
 {
 	enabled = new ConVar(PREFIX "trigger_auto", "0", 0, "Enable or disable the triggerbot");
+	hit_objs = new ConVar(PREFIX "trigger_objects", "1", 0, "Objects ");
 	contfdebug = new ConCommand(PREFIX "trigger_debug",
 			[](){do_debug = true;}, "Get information of the player pointed at");
 	basehook::post_move(frame, "trigger");

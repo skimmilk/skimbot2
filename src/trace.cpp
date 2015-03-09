@@ -61,14 +61,13 @@ IClientEntity* trace::ray(const Vector& start, const QAngle& aim, int ignore)
 
 	return tr.m_pEnt;
 }
-tfplayer* trace::sight(const Vector& start, const QAngle& viewangle, int idignore)
+tfentity* trace::sight(const Vector& start, const QAngle& viewangle, int idignore)
 {
-	tfplayer* aim = (tfplayer*)ray(start, viewangle, idignore);
-
+	tfentity* aim = (tfentity*)ray(start, viewangle, idignore);
 	return aim;
 }
 
-bool trace::can_see_fast(const Vector& start, tfplayer* pl)
+bool trace::can_see_fast(const Vector& start, tfentity* pl)
 {
 	Vector middle = pl->GetAbsOrigin();
 	middle.y += 32;

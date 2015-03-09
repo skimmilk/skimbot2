@@ -149,6 +149,7 @@ public:
 class tfobject : public tfentity
 {
 public:
+	DEFNETVAR(int, m_iTeamNum, "CBaseObject");
 	DEFNETVAR(int, m_iHealth, "CBaseObject");
 	DEFNETVAR(int, m_iMaxHealth, "CBaseObject");
 	DEFNETVAR(int, m_fObjectFlags, "CBaseObject");
