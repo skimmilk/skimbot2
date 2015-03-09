@@ -72,7 +72,9 @@ static void paint()
 
 	int end = ifs::engine->GetMaxClients() + 1;
 	float max_dist = maxdist->m_fValue;
+	float min_dist = 8192;
 	tfplayer* me = tfplayer::me();
+	tfplayer* closest = 0;
 
 	color drawcolor {10, 10, 255, 255};
 	if (me->m_iTeamNum() == 3)
@@ -89,10 +91,35 @@ static void paint()
 			continue;
 
 		float distance = dist(me, pl);
+
+
 		if (pl->is_drawable() &&
 				(friendlies->m_nValue || pl->m_iTeamNum() != me->m_iTeamNum()) &&
 				distance < max_dist)
+		{
 			draw(pl, distance);
+			if (distance < min_dist)
+			{
+				min_dist = distance;
+				closest = pl;
+			}
+		}
+	}
+
+	if (cursor->m_nValue && closest)
+	{
+		point enemy;
+		Vector world = closest->GetAbsOrigin();
+		world.z += 40;
+
+		draw::color({255,255,255,64});
+		int w, h;
+		ifs::engine->GetScreenSize(w, h);
+
+		if (draw::world_point(world, enemy))
+			draw::line(enemy, {w/2, h/2});
+		else
+			draw::line({w/2, h}, {w/2, h/2});
 	}
 }
 
