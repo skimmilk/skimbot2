@@ -40,7 +40,11 @@ void tfdebug::playerinfo(int index)
 	con(player->GetClientClass()->m_pNetworkName);
 
 	const model_t* model = player->GetModel();
+	if (!model)
+		return;
 	studiohdr_t* studio = ifs::model_info->GetStudiomodel(model);
+	if (!studio)
+		return;
 
 	con(std::string(studio->name, studio->length));
 	con(std::to_string(studio->checksum));
@@ -59,38 +63,56 @@ void tfdebug::playerinfo(int index)
 	con("m_vecViewOffset:\t\t" + std::to_string(eye.x) +
 			", " + std::to_string(eye.y) + ", " + std::to_string(eye.z));
 
-	con("m_iHealth:\t\t" + std::to_string(player->m_iHealth()));
+	if (player->type() == tftype::player)
+	{
+		con("m_iHealth:\t\t" + std::to_string(player->m_iHealth()));
 
-	con("m_iTeamNum:\t\t" + std::to_string(player->m_iTeamNum()));
-	con("m_iClass:\t\t" + std::to_string((int)player->m_iClass()));
-	con("m_nDisguiseClass:\t\t" + std::to_string(player->m_nDisguiseClass()));
+		con("m_iTeamNum:\t\t" + std::to_string(player->m_iTeamNum()));
+		con("m_iClass:\t\t" + std::to_string((int)player->m_iClass()));
+		con("m_nDisguiseClass:\t\t" + std::to_string(player->m_nDisguiseClass()));
 
-	con("m_nPlayerCond:\t\t" + std::to_string(player->m_nPlayerCond()));
-	con("m_nPlayerState:\t\t" + std::to_string(player->m_nPlayerState()));
-	con("m_lifeState:\t\t" + std::to_string(player->m_lifeState()));
+		con("m_nPlayerCond:\t\t" + std::to_string(player->m_nPlayerCond()));
+		con("m_nPlayerState:\t\t" + std::to_string(player->m_nPlayerState()));
 
-	if (player->type() != tftype::player)
-		return;
+		if (player->type() != tftype::player)
+			return;
 
-	int whandle = player->m_hActiveWeapon();
-	if (!whandle || whandle == -1)
-		return;
-	// Get the weapon
-	con("Weapon information");
-	con("m_hActiveWeapon:\t\t" + std::to_string(whandle) + " : " +
-			std::to_string(whandle & 0x0fff));
+		int whandle = player->m_hActiveWeapon();
+		if (!whandle || whandle == -1)
+			return;
+		// Get the weapon
+		con("Weapon information");
+		con("m_hActiveWeapon:\t\t" + std::to_string(whandle) + " : " +
+				std::to_string(whandle & 0x0fff));
 
-	tfweapon* weapon = player->weapon();
-	if (!weapon)
-		return;
-	con("m_iItemDefinitionIndex:\t\t" + std::to_string(weapon->m_iItemDefinitionIndex()));
-	con("m_flNextPrimaryAttack:\t\t" + std::to_string(weapon->m_flNextPrimaryAttack()));
-	con("m_iReloadMode:\t\t" + std::to_string(weapon->m_iReloadMode()));
-	con("reloading:\t\t" + std::to_string(weapon->m_bInReload()));
-	con("Weapon class name: " + std::string(weapon->GetClientClass()->m_pNetworkName));
-	con("Slot/streaming/damaging:\t\t" + std::to_string((int)weapon->slot()) +
-			std::to_string(weapon->streaming()) +
-			std::to_string(weapon->damaging()));
+		tfweapon* weapon = player->weapon();
+		if (!weapon)
+			return;
+		con("m_iItemDefinitionIndex:\t\t" + std::to_string(weapon->m_iItemDefinitionIndex()));
+		con("m_flNextPrimaryAttack:\t\t" + std::to_string(weapon->m_flNextPrimaryAttack()));
+		con("m_iReloadMode:\t\t" + std::to_string(weapon->m_iReloadMode()));
+		con("reloading:\t\t" + std::to_string(weapon->m_bInReload()));
+		con("Weapon class name: " + std::string(weapon->GetClientClass()->m_pNetworkName));
+		con("Slot/streaming/damaging:\t\t" + std::to_string((int)weapon->slot()) +
+				std::to_string(weapon->streaming()) +
+				std::to_string(weapon->damaging()));
+	}
+	else if (player->type() == tftype::object)
+	{
+		tfobject* obj = (tfobject*)player;
+
+		con("m_iHealth:\t\t" + std::to_string(obj->m_iHealth()));
+		con("m_iMaxHealth:\t\t" + std::to_string(obj->m_iMaxHealth()));
+		con("m_fObjectFlags:\t\t" + std::to_string(obj->m_fObjectFlags()));
+		con("type:\t\t" + std::to_string((int)obj->object_type()));
+	}
+	else if (player->type() == tftype::projectile)
+	{
+		tfprojectile* proj = (tfprojectile*)player;
+
+		con("m_iTeamNum:\t\t" + std::to_string(proj->m_iTeamNum()));
+		con("type:\t\t" + std::to_string((int)proj->projectile_type()));
+	}
 }
 
 void tfdebug::localinfo()

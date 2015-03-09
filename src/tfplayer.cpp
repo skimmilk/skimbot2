@@ -38,21 +38,33 @@ bool tfplayer::is_player()
 // Weapon does not do any damage
 #define REGWEPNODMG(str) weapon_nodmg.insert(netvar::class_id_search(#str))
 // Register client class type
-#define REGENT(str, type) entity_type[netvar::class_id_search(#str)] = type
+#define REGENT(str, type) entity_type[netvar::class_id_search(#str)] = std::make_tuple(type, 0)
+#define REGENT2(str, type, second) entity_type[netvar::class_id_search(#str)] = std::make_tuple(type, (int)second)
 
 // First parameter is class ID, second slot
 std::unordered_map<int, tfslot> weapon_slot;
 std::unordered_set<int> weapon_streaming;
 std::unordered_set<int> weapon_nodmg;
-std::unordered_map<int, tftype> entity_type;
+std::unordered_map<int, std::tuple<tftype, int>> entity_type;
 bool initialized;
 
 static void init()
 {
 	initialized = true;
 	REGENT(CTFPlayer, tftype::player);
-	REGENT(CTFStunBall, tftype::projectile);
-	REGENT(CTFBall_Ornament, tftype::projectile);
+	REGENT2(CObjectSentrygun, tftype::object, tftype_object::sentry);
+	REGENT2(CObjectDispenser, tftype::object, tftype_object::dispenser);
+	REGENT2(CObjectTeleporter, tftype::object, tftype_object::teleporter);
+	REGENT2(CTFAmmoPack, tftype::object, tftype_object::ammo);
+	REGENT2(CTFProjectile_Rocket, tftype::projectile, tftype_projectile::rocket);
+	REGENT2(CTFProjectile_Flare, tftype::projectile, tftype_projectile::flare);
+	REGENT2(CTFProjectile_HealingBolt, tftype::projectile, tftype_projectile::arrow);
+	REGENT2(CTFProjectile_Arrow, tftype::projectile, tftype_projectile::arrow);
+	REGENT2(CTFProjectile_SentryRocket, tftype::projectile, tftype_projectile::rocket);
+	REGENT2(CTFProjectile_Throwable, tftype::projectile, tftype_projectile::cleaver);
+	REGENT2(CTFStunBall, tftype::projectile, tftype_projectile::ball);
+	REGENT2(CTFBall_Ornament, tftype::projectile, tftype_projectile::ball);
+	REGENT(CTFGrenadePipebombProjectile, tftype::projectile); // sticky&pill
 
 	REGWEP(CTFWearableRobotArm, 3);
 	REGWEP(CTFRobotArm, 3);
@@ -181,7 +193,36 @@ tftype tfentity::type()
 	auto needle = entity_type.find(GetClientClass()->m_ClassID);
 	if (needle == entity_type.end())
 		return tftype::other;
-	return needle->second;
+	return std::get<0>(needle->second);
+}
+tftype_object tfobject::object_type()
+{
+	if (!initialized)
+		init();
+
+	auto needle = entity_type.find(GetClientClass()->m_ClassID);
+	if (needle == entity_type.end())
+		return tftype_object::other;
+	return (tftype_object)std::get<1>(needle->second);
+
+}
+tftype_projectile tfprojectile::projectile_type()
+{
+	if (!initialized)
+		init();
+
+	int classid = GetClientClass()->m_ClassID;
+	if (classid == netvar::classid<_id>("CTFGrenadePipebombProjectile"))
+	{
+		// TODO: differentiate between pipe and sticky
+		return tftype_projectile::sticky;
+	}
+
+	auto needle = entity_type.find(classid);
+	if (needle == entity_type.end())
+		return tftype_projectile::other;
+	return (tftype_projectile)std::get<1>(needle->second);
+
 }
 
 }

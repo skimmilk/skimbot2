@@ -15,6 +15,9 @@
 namespace skim
 {
 
+enum class tftype { other, player, object, projectile };
+enum class tftype_object : int { other, sentry, dispenser, teleporter, health, ammo, money };
+enum class tftype_projectile : int { other, sticky, pill, rocket, jar, ball, cleaver, flare, arrow };
 enum class tfclass : int { scout = 1, sniper, soldier, demoman, medic, heavy, pyro, spy, engineer };
 // tfslot::menu describes the engineer's build/destroy and the spy's disguise menus
 enum class tfslot : int { primary = 1, secondary, melee, menu };
@@ -63,7 +66,6 @@ enum class tfhitbox : int
 
 #define DEFNETVAR(result, name, ...) result& name() { return netvar::net<_id, result>(this, __VA_ARGS__, #name); }
 
-enum class tftype { other, player, object, projectile };
 class tfentity : public IClientEntity
 {
 public:
@@ -77,7 +79,6 @@ public:
 	static tfplayer* me();
 
 	DEFNETVAR(int, m_iHealth, "CBasePlayer");
-	DEFNETVAR(int, m_lifeState, "CBasePlayer");
 	DEFNETVAR(int, m_fFlags, "CBasePlayer");
 	DEFNETVAR(Vector, m_vecOrigin, "CBasePlayer");
 	DEFNETVAR(int, m_iTeamNum, "CBasePlayer");
@@ -151,6 +152,8 @@ public:
 	DEFNETVAR(int, m_iHealth, "CBaseObject");
 	DEFNETVAR(int, m_iMaxHealth, "CBaseObject");
 	DEFNETVAR(int, m_fObjectFlags, "CBaseObject");
+
+	tftype_object object_type();
 };
 
 class tfprojectile : public tfentity
@@ -160,8 +163,9 @@ public:
 	DEFNETVAR(int, m_iTeamNum, "CBaseProjectile");
 	DEFNETVAR(int, m_hOwnerEntity, "CBaseProjectile");
 	DEFNETVAR(int, m_hOriginalLauncher, "CBaseProjectile");
-
 	DEFNETVAR(int, m_hLauncher, "CTFBaseProjectile");
+
+	tftype_projectile projectile_type();
 };
 
 }
