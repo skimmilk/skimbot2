@@ -83,6 +83,8 @@ public:
 	tftype type();
 	// Returns the name of the type (like spy, dispenser, sticky)
 	const char* type_name();
+	// This entity is damageable
+	bool damageable();
 };
 
 class tfweapon;

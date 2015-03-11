@@ -293,5 +293,24 @@ const char* tfentity::type_name()
 		}
 	return "Unknown";
 }
+bool tfentity::damageable()
+{
+	auto t = type();
+	if (t == tftype::player)
+		return true; // TODO: check invincibility status
+	else if (t == tftype::projectile)
+		// TODO: Check if the sticky is on the ground
+		return ((tfprojectile*)this)->projectile_type() == tftype_projectile::sticky;
+	else if (t == tftype::object)
+		switch (((tfobject*)this)->object_type())
+		{
+		case tftype_object::dispenser:
+		case tftype_object::sentry:
+		case tftype_object::teleporter:
+			return true;
+		default: return false;
+		}
+	return false;
+}
 
 }
