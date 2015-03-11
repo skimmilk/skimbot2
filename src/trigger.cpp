@@ -26,7 +26,8 @@ ConVar* hit_objs;
 ConCommand* contfdebug;
 bool do_debug;
 
-static bool enemy(CUserCmd* cmd, float* distance = nullptr)
+// Returns the enemy we're looking at
+static tfentity* enemy(CUserCmd* cmd)
 {
 	tfplayer* me = tfplayer::me();
 	tfentity* sight = trace::sight(me->local_eyes(), cmd->viewangles, ifs::engine->GetLocalPlayer());
@@ -34,34 +35,34 @@ static bool enemy(CUserCmd* cmd, float* distance = nullptr)
 	if (!sight && sight->entindex() < 1)
 		return 0;
 
-	if (distance)
-		*distance = sqrtf((me->GetAbsOrigin() - sight->GetAbsOrigin()).LengthSqr());
-
 	switch (sight->type())
 	{
 	case tftype::player:
-		return ((tfplayer*)sight)->m_iTeamNum() != me->m_iTeamNum();
+		return (((tfplayer*)sight)->m_iTeamNum() != me->m_iTeamNum()) ? sight : 0;
 	case tftype::object:
-		return hit_objs->m_nFlags && ((tfobject*)sight)->m_iTeamNum() != me->m_iTeamNum() &&
+		return (hit_objs->m_nFlags && ((tfobject*)sight)->m_iTeamNum() != me->m_iTeamNum() &&
 				(((tfobject*)sight)->object_type() == tftype_object::sentry ||
 				((tfobject*)sight)->object_type() == tftype_object::dispenser ||
-				((tfobject*)sight)->object_type() == tftype_object::teleporter);
+				((tfobject*)sight)->object_type() == tftype_object::teleporter)) ? sight : 0;
 	default:
 		return 0;
 	}
 }
 // Determines if our weapon can do damage at this distance from player
-static bool can_fire(float distance)
+static bool can_fire(tfentity* en)
 {
 	tfweapon* wep = tfplayer::me()->weapon();
 	if (!wep || !wep->damaging())
+		return false;
+
+	if (!en->damageable())
 		return false;
 
 	// Don't enable triggerbot with knife
 	if (tfplayer::me()->m_iClass() == tfclass::spy && wep->slot() == tfslot::melee)
 		return false;
 	if (wep->slot() == tfslot::melee)
-		return distance < 128;
+		return sqrtf((tfplayer::me()->GetAbsOrigin() - en->GetAbsOrigin()).LengthSqr()) < 128;
 	return true;
 }
 static void triggerbot(CUserCmd* cmd)
@@ -72,12 +73,12 @@ static void triggerbot(CUserCmd* cmd)
 	if (!me->weapon())
 		return;
 
-	float distance = 0;
+	tfentity* en = 0;
 	// Knifebot
 	if (me->m_iClass() == tfclass::spy &&
 			me->weapon()->slot() == tfslot::melee && me->weapon()->m_bReadyToBackstab())
 		cmd->buttons |= IN_ATTACK;
-	else if (enemy(cmd, &distance) && can_fire(distance))
+	else if ((en = enemy(cmd)) && can_fire(en))
 		cmd->buttons |= IN_ATTACK;
 }
 
