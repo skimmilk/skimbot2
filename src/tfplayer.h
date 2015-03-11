@@ -21,6 +21,15 @@ enum class tftype_projectile : int { other, sticky, pill, rocket, jar, ball, cle
 enum class tfclass : int { scout = 1, sniper, soldier, demoman, medic, heavy, pyro, spy, engineer };
 // tfslot::menu describes the engineer's build/destroy and the spy's disguise menus
 enum class tfslot : int { primary = 1, secondary, melee, menu };
+
+// Flags in m_nPlayerState
+#define STATE_DYING 1
+#define STATE_DEAD 2
+
+// Condition flags for m_nPlayerCond
+#define COND_DISGUISED 8
+#define COND_CLOAKED 16
+
 enum class tfhitbox : int
 {
     HITBOX_ENGINEER_HIP_R = 14,
@@ -96,7 +105,7 @@ public:
 	DEFNETVAR(int, m_iRevengeCrits, "CTFPlayer", "m_Shared");
 
 	bool is_player();
-	bool is_alive() { return !(m_nPlayerCond() & 2 || m_nPlayerCond() & 1); }
+	bool is_alive() { return !(m_nPlayerState() & STATE_DEAD || m_nPlayerState() & STATE_DYING); }
 	bool is_drawable() { return is_alive() && !this->IsDormant(); }
 
 	// LOCAL ONLY CBasePlayer.localdata.m_vecViewOffset[0]
