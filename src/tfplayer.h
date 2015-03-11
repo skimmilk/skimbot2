@@ -29,6 +29,7 @@ enum class tfslot : int { primary = 1, secondary, melee, menu };
 // Condition flags for m_nPlayerCond
 #define COND_DISGUISED 8
 #define COND_CLOAKED 16
+#define COND_TAUNT 128
 
 enum class tfhitbox : int
 {

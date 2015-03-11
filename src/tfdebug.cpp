@@ -91,7 +91,8 @@ void tfdebug::playerinfo(int index)
 		con("m_iItemDefinitionIndex:\t\t" + std::to_string(weapon->m_iItemDefinitionIndex()));
 		con("m_flNextPrimaryAttack:\t\t" + std::to_string(weapon->m_flNextPrimaryAttack()));
 		con("m_iReloadMode:\t\t" + std::to_string(weapon->m_iReloadMode()));
-		con("reloading:\t\t" + std::to_string(weapon->m_bInReload()));
+		con("m_bInReload:\t\t" + std::to_string(weapon->m_bInReload()));
+		con("m_iClip1:\t\t" + std::to_string(weapon->m_iClip1()));
 		con("Weapon class name: " + std::string(weapon->GetClientClass()->m_pNetworkName));
 		con("Slot/streaming/damaging:\t\t" + std::to_string((int)weapon->slot()) +
 				std::to_string(weapon->streaming()) +
