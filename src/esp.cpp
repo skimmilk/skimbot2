@@ -37,33 +37,65 @@ static float dist(tfplayer* me, tfplayer* them)
 	Vector diff = me->GetAbsOrigin() - them->GetAbsOrigin();
 	return sqrtf(diff.LengthSqr());
 }
-static void simple_esp(tfplayer* them, color c, float distance)
+// Draw box around player
+static bool simple_esp(tfplayer* them, color c, point& bottom_left)
 {
 	Vector mins = them->GetAbsOrigin();
 	Vector maxs = mins;
 	maxs.z += 80;
 	mins.z -= 5;
 
-	int scrwidth = width->m_fValue / distance;
-	point tl, br;
+	float width = 16;
+	Vector dir_left;
+	QAngle perpendicular;
 
-	if (!draw::world_point(mins, br) ||
-			!draw::world_point(maxs, tl))
-		return;
+	ifs::engine->GetViewAngles(perpendicular);
+	perpendicular.y -= 90.f;
+	perpendicular.x = 0;
 
-	tl.x -= scrwidth;
-	br.x += scrwidth;
+	dir_right = AngleVectors(perpendicular);
+	dir_right *= width;
 
-	draw::line_box(tl, br, c);
+	// Top left, top right, ...
+	Vector vtl, vtr, vbl, vbr;
+	vtl = maxs - dir_right;
+	vtr = maxs + dir_right;
+	vbl = mins - dir_right;
+	vbr = mins + dir_right;
+
+	point ptl, ptr, pbl, pbr;
+	if (!draw::world_point(vtl, ptl) ||
+			!draw::world_point(vtr, ptr) ||
+			!draw::world_point(vbl, pbl) ||
+			!draw::world_point(vbr, pbr))
+		return false;
+
+	draw::line(ptl, ptr, c);
+	draw::line(ptr, pbr, c);
+	draw::line(pbl, pbr, c);
+	draw::line(ptl, pbl, c);
+
+	bottom_left = pbl;
+	return true;
 }
 // Draw the ESP on given player (assumes player is valid but still does additional checks)
 static void draw(tfplayer* pl, color c, float distance)
 {
+	point bottom_left;
 	// Draw simple ESP
-	simple_esp(pl, c, distance);
+	if (!simple_esp(pl, c, bottom_left))
+		return;
 
 	if (distance > falloff->m_fValue)
 		return;
+
+	player_info_t info;
+	ifs::engine->GetPlayerInfo(pl->entindex(), &info);
+	bottom_left.y += 10;
+	draw::string(bottom_left, c, info.name);
+
+	bottom_left.y += 10;
+	draw::string(bottom_left, c, "Health: " + std::to_string(pl->m_iHealth()));
 }
 static void paint()
 {

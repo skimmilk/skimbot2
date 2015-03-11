@@ -27,6 +27,7 @@ enum class tfslot : int { primary = 1, secondary, melee, menu };
 #define STATE_DEAD 2
 
 // Condition flags for m_nPlayerCond
+#define COND_MINIGUN 1
 #define COND_DISGUISED 8
 #define COND_CLOAKED 16
 #define COND_TAUNT 128
