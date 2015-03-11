@@ -12,6 +12,7 @@
 #define NAME "[skimbot]: "
 #define PREFIX_ERROR NAME "ERROR: "
 
+#define ENT_START 1
 #define ENT_MAX 2048
 
 #endif /* CONST_H_ */

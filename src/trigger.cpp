@@ -23,6 +23,8 @@ namespace skim
 
 ConVar* enabled;
 ConVar* hit_objs;
+ConVar* reflect;
+ConVar* reflect_dist;
 ConCommand* contfdebug;
 bool do_debug;
 
@@ -41,9 +43,7 @@ static tfentity* enemy(CUserCmd* cmd)
 		return (((tfplayer*)sight)->m_iTeamNum() != me->m_iTeamNum()) ? sight : 0;
 	case tftype::object:
 		return (hit_objs->m_nFlags && ((tfobject*)sight)->m_iTeamNum() != me->m_iTeamNum() &&
-				(((tfobject*)sight)->object_type() == tftype_object::sentry ||
-				((tfobject*)sight)->object_type() == tftype_object::dispenser ||
-				((tfobject*)sight)->object_type() == tftype_object::teleporter)) ? sight : 0;
+				sight->damageable()) ? sight : 0;
 	default:
 		return 0;
 	}
@@ -67,8 +67,6 @@ static bool can_fire(tfentity* en)
 }
 static void triggerbot(CUserCmd* cmd)
 {
-	if (!enabled->m_nValue)
-		return;
 	tfplayer* me = tfplayer::me();
 	if (!me->weapon())
 		return;
@@ -81,10 +79,37 @@ static void triggerbot(CUserCmd* cmd)
 	else if ((en = enemy(cmd)) && can_fire(en))
 		cmd->buttons |= IN_ATTACK;
 }
+static void reflectbot(CUserCmd* cmd)
+{
+	if (tfplayer::me()->m_iClass() != tfclass::pyro ||
+			!tfplayer::me()->weapon() ||
+			tfplayer::me()->weapon()->slot() != tfslot::primary)
+		return;
+
+	int current_team = tfplayer::me()->m_iTeamNum();
+	Vector eyepos = tfplayer::me()->local_eyes();
+
+	for (int i = ENT_START; i < ENT_MAX; i++)
+	{
+		tfprojectile* ent = (tfprojectile*)ifs::entities->GetClientEntity(i);
+		if (!ent || ent->type() != tftype::projectile || ent->m_iTeamNum() == current_team)
+			continue;
+
+		float distance = sqrtf((eyepos - ent->GetAbsOrigin()).LengthSqr());
+		if (distance > reflect_dist->m_fValue)
+			continue;
+
+		cmd->buttons |= IN_ATTACK2;
+		break;
+	}
+}
 
 static void frame(CUserCmd* cmd)
 {
-	triggerbot(cmd);
+	if (enabled->m_nValue)
+		triggerbot(cmd);
+	if (reflect->m_nValue)
+		reflectbot(cmd);
 
 	if (do_debug)
 	{
@@ -99,11 +124,15 @@ static void unload()
 	delete enabled;
 	delete contfdebug;
 	delete hit_objs;
+	delete reflect;
+	delete reflect_dist;
 }
 void trigger::init()
 {
 	enabled = new ConVar(PREFIX "trigger_auto", "0", 0, "Enable or disable the triggerbot");
-	hit_objs = new ConVar(PREFIX "trigger_objects", "1", 0, "Objects ");
+	hit_objs = new ConVar(PREFIX "trigger_objects", "1", 0, "Objects get hit");
+	reflect = new ConVar(PREFIX "trigger_reflect", "1", 0, "Reflect projectiles");
+	reflect_dist = new ConVar(PREFIX "trigger_reflect_distance", "128", 0, "Maximum distance to reflect projectile");
 	contfdebug = new ConCommand(PREFIX "trigger_debug",
 			[](){do_debug = true;}, "Get information of the player pointed at");
 	basehook::post_move(frame, "trigger");
