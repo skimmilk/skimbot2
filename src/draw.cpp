@@ -22,21 +22,37 @@ void draw::init()
 	ifs::surface->SetFontGlyphSet(font, "Default", 12, 450, 0, 0, ISurface::FONTFLAG_OUTLINE);
 }
 
-void draw::color(const ::color& clr)
+static void setc(const color& clr)
 {
 	ifs::surface->DrawSetColor(clr);
 }
-void draw::line(const point& p1, const point& p2)
+void draw::line(const point& p1, const point& p2, const color& c)
 {
+	setc(c);
 	ifs::surface->DrawLine(p1.x, p1.y, p2.x, p2.y);
 }
-void draw::line_box(const point& p1, const point& p2)
+void draw::line_box(const point& p1, const point& p2, const color& c)
 {
+	setc(c);
 	ifs::surface->DrawOutlinedRect(p1.x, p1.y, p2.x, p2.y);
 }
-void draw::fill_box(const point& p1, const point& p2)
+void draw::fill_box(const point& p1, const point& p2, const color& c)
 {
+	setc(c);
 	ifs::surface->DrawFilledRect(p1.x, p1.y, p2.x, p2.y);
+}
+
+void draw::string(const point& p, const color& c, const std::string& text)
+{
+	std::wstring tmp (text.begin(), text.end());
+	draw::string(p, c, tmp);
+}
+void draw::string(const point& p, const color& c, const std::wstring& text)
+{
+	ifs::surface->DrawSetTextFont(font);
+	ifs::surface->DrawSetTextColor(c);
+	ifs::surface->DrawSetTextPos(p.x, p.y);
+	ifs::surface->DrawPrintText(text.c_str(), text.length());
 }
 
 bool draw::world_point(const Vector& wpt, point& spt)
@@ -63,12 +79,12 @@ bool draw::world_point(const Vector& wpt, point& spt)
 	spt.y = cy;
 	return true;
 }
-bool draw::world_line(const Vector& pt1, const Vector& pt2)
+bool draw::world_line(const Vector& pt1, const Vector& pt2, const color& c)
 {
 	point scr1, scr2;
 	if (!world_point(pt1, scr1) || !world_point(pt2, scr2))
 		return false;
-	line(scr1, scr2);
+	line(scr1, scr2, c);
 	return true;
 }
 

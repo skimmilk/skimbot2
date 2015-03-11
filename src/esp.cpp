@@ -37,7 +37,7 @@ static float dist(tfplayer* me, tfplayer* them)
 	Vector diff = me->GetAbsOrigin() - them->GetAbsOrigin();
 	return sqrtf(diff.LengthSqr());
 }
-static void simple_esp(tfplayer* them, float distance)
+static void simple_esp(tfplayer* them, color c, float distance)
 {
 	Vector mins = them->GetAbsOrigin();
 	Vector maxs = mins;
@@ -54,13 +54,13 @@ static void simple_esp(tfplayer* them, float distance)
 	tl.x -= scrwidth;
 	br.x += scrwidth;
 
-	draw::line_box(tl, br);
+	draw::line_box(tl, br, c);
 }
 // Draw the ESP on given player (assumes player is valid but still does additional checks)
-static void draw(tfplayer* pl, float distance)
+static void draw(tfplayer* pl, color c, float distance)
 {
 	// Draw simple ESP
-	simple_esp(pl, distance);
+	simple_esp(pl, c, distance);
 
 	if (distance > falloff->m_fValue)
 		return;
@@ -79,7 +79,6 @@ static void paint()
 	color drawcolor {10, 10, 255, 255};
 	if (me->m_iTeamNum() == 3)
 		drawcolor = {255, 0, 0, 255};
-	draw::color(drawcolor);
 
 	for (int i = 1; i < end; i++)
 	{
@@ -92,12 +91,11 @@ static void paint()
 
 		float distance = dist(me, pl);
 
-
 		if (pl->is_drawable() &&
 				(friendlies->m_nValue || pl->m_iTeamNum() != me->m_iTeamNum()) &&
 				distance < max_dist)
 		{
-			draw(pl, distance);
+			draw(pl, drawcolor, distance);
 			if (distance < min_dist)
 			{
 				min_dist = distance;
@@ -106,20 +104,20 @@ static void paint()
 		}
 	}
 
+	// Draw cursor to nearest enemy
 	if (cursor->m_nValue && closest)
 	{
 		point enemy;
 		Vector world = closest->GetAbsOrigin();
 		world.z += 40;
 
-		draw::color({255,255,255,64});
 		int w, h;
 		ifs::engine->GetScreenSize(w, h);
 
 		if (draw::world_point(world, enemy))
-			draw::line(enemy, {w/2, h/2});
+			draw::line(enemy, {w/2, h/2}, {255,255,255,64});
 		else
-			draw::line({w/2, h}, {w/2, h/2});
+			draw::line({w/2, h}, {w/2, h/2}, {255,255,255,64});
 	}
 }
 
@@ -132,11 +130,12 @@ static void unload()
 	delete friendlies;
 	delete sightdist;
 	delete falloff;
+	delete cursor;
 }
 void esp::init()
 {
 	esp_enabled=new ConVar(PREFIX "esp", "0");
-	width =		new ConVar(PREFIX "esp_width", "1000");
+	width =		new ConVar(PREFIX "esp_width", "10000");
 	box =		new ConVar(PREFIX "esp_box", "1");
 	bones =		new ConVar(PREFIX "esp_bones", "0");
 	maxdist =	new ConVar(PREFIX "esp_maxdist", "8192");

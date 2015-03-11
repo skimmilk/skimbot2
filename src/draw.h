@@ -8,6 +8,7 @@
 #ifndef DRAW_H_
 #define DRAW_H_
 
+#include <string>
 #include "sdk/common.h"
 
 namespace skim
@@ -51,14 +52,17 @@ class draw
 public:
 	static void init();
 
-	static void color(const color& clr);
-	static void line(const point& p1, const point& p2);
-	static void line_box(const point& p1, const point& p2);
-	static void fill_box(const point& p1, const point& p2);
+	static void line(const point& p1, const point& p2, const color&);
+	static void line_box(const point& p1, const point& p2, const color&);
+	static void fill_box(const point& p1, const point& p2, const color&);
+
+	// Won't work on multi-byte UTF-8 characters
+	static void string(const point&, const color&, const std::string& text);
+	static void string(const point&, const color&, const std::wstring& text);
 
 	// Get a point from the world as it looks on screen
 	static bool world_point(const Vector& worldpt, point& pt);
-	static bool world_line(const Vector& pt1, const Vector& pt2);
+	static bool world_line(const Vector& pt1, const Vector& pt2, const color&);
 };
 
 } /* namespace skim */
