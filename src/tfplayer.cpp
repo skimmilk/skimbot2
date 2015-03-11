@@ -224,5 +224,74 @@ tftype_projectile tfprojectile::projectile_type()
 	return (tftype_projectile)std::get<1>(needle->second);
 
 }
+const char* tfentity::type_name()
+{
+	auto t = type();
+	if (t == tftype::player)
+		switch (((tfplayer*)this)->m_iClass())
+		{
+		case tfclass::demoman:
+			return "Demoman";
+		case tfclass::engineer:
+			return "Engineer";
+		case tfclass::heavy:
+			return "Heavy";
+		case tfclass::medic:
+			return "Medic";
+		case tfclass::pyro:
+			return "Pyro";
+		case tfclass::scout:
+			return "Scout";
+		case tfclass::sniper:
+			return "Sniper";
+		case tfclass::soldier:
+			return "Soldier";
+		case tfclass::spy:
+			return "Spy";
+		default:
+			return "Unknown";
+		}
+	else if (t == tftype::object)
+		switch (((tfobject*)this)->object_type())
+		{
+		case tftype_object::ammo:
+			return "Ammo";
+		case tftype_object::dispenser:
+			return "Dispenser";
+		case tftype_object::health:
+			return "Health";
+		case tftype_object::money:
+			return "Money";
+		case tftype_object::sentry:
+			return "Sentry";
+		case tftype_object::teleporter:
+			return "Teleporter";
+		default:
+			return "Unknown";
+		}
+	else if (t == tftype::projectile)
+		switch (((tfprojectile*)this)->projectile_type())
+		{
+		case tftype_projectile::arrow:
+			return "Arrow";
+		case tftype_projectile::ball:
+			return "Ball";
+		case tftype_projectile::cleaver:
+			return "Cleaver";
+		case tftype_projectile::flare:
+			return "Flare";
+		case tftype_projectile::jar:
+			return "Jar";
+		case tftype_projectile::pill:
+			return "Pill";
+		case tftype_projectile::rocket:
+			return "Rocket";
+		case tftype_projectile::sticky:
+			return "Sticky";
+		default:
+			return "Unknown";
+		}
+	return "Unknown";
+}
 
 }

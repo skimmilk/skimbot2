@@ -99,11 +99,8 @@ static void draw(tfentity* pl, color c, float distance)
 	color white {255,255,255,255};
 
 	// Print type of object
-	if (pl->type() == tftype::object || pl->type() == tftype::projectile)
-	{
-		bottom_left.y += fontheight;
-		draw::string(bottom_left, white, pl->GetClientClass()->m_pNetworkName);
-	}
+	bottom_left.y += fontheight;
+	draw::string(bottom_left, white, pl->type_name());
 
 	// Draw health
 	if (pl->type() == tftype::object)
