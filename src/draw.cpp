@@ -19,7 +19,7 @@ HFont font;
 void draw::init()
 {
 	font = ifs::surface->CreateFont();
-	ifs::surface->SetFontGlyphSet(font, "Default", 12, 450, 0, 0, ISurface::FONTFLAG_OUTLINE);
+	ifs::surface->SetFontGlyphSet(font, "Default", 14, 450, 0, 0, ISurface::FONTFLAG_OUTLINE);
 }
 
 static void setc(const color& clr)
