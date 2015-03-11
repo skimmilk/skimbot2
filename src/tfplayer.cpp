@@ -302,9 +302,9 @@ bool tfentity::damageable()
 {
 	auto t = type();
 	if (t == tftype::player)
-		return true; // TODO: check invincibility status
+		return !(((tfplayer*)this)->m_nPlayerCond() & COND_UBER);
 	else if (t == tftype::projectile)
-		// TODO: Check if the sticky is on the ground
+		// TODO: Check if the sticky is on the ground & arrow is flying
 		return ((tfprojectile*)this)->projectile_type() == tftype_projectile::sticky;
 	else if (t == tftype::object)
 		switch (((tfobject*)this)->object_type())

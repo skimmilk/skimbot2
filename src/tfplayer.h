@@ -30,7 +30,9 @@ enum class tfslot : int { primary = 1, secondary, melee, menu };
 #define COND_MINIGUN 1
 #define COND_DISGUISED 8
 #define COND_CLOAKED 16
+#define COND_UBER 32
 #define COND_TAUNT 128
+#define COND_OVERHEALED 8388608
 
 enum class tfhitbox : int
 {
