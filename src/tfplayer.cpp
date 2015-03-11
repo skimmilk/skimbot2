@@ -14,6 +14,7 @@
 #include "sourceutil.h"
 #include "sdk/engine.h"
 #include "sdk/vars.h"
+#include "sdk/model.h"
 
 namespace skim
 {
@@ -214,8 +215,12 @@ tftype_projectile tfprojectile::projectile_type()
 	int classid = GetClientClass()->m_ClassID;
 	if (classid == netvar::classid<_id>("CTFGrenadePipebombProjectile"))
 	{
-		// TODO: differentiate between pipe and sticky
-		return tftype_projectile::sticky;
+		// Get model of entity
+		studiohdr_t* studio = ifs::model_info->GetStudiomodel(GetModel());
+		if (studio->checksum == 959466927 ||
+				studio->checksum == -374341724)
+			return tftype_projectile::sticky;
+		return tftype_projectile::pill;
 	}
 
 	auto needle = entity_type.find(classid);
