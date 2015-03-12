@@ -180,7 +180,8 @@ static void paint()
 
 		draw(pl, drawcolor, distance);
 
-		if (distance < min_dist)
+		// Set closest entity
+		if (pl->damageable() && distance < min_dist)
 		{
 			min_dist = distance;
 			closest = pl;
