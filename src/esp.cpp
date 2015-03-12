@@ -24,7 +24,6 @@ namespace skim
 ConVar* esp_enabled;
 ConVar* box;
 ConVar* bones;
-ConVar* glow;
 ConVar* maxdist;
 ConVar* friendlies; // Draw friendlies
 ConVar* sightdist; // Length of the line-of-sight bar
@@ -32,6 +31,8 @@ ConVar* falloff; // If players are further away than this, don't draw detailed s
 ConVar* cursor; // Draw cursor to closest player
 ConVar* draw_objs; // Draw objects (sentries, dispencers, teleporters)
 ConVar* draw_projs; // Draw projectiles
+ConVar* unmask; // Remove spies' disguises
+ConVar* uncloak; // Remove spies' cloaks
 
 static float dist(tfentity* me, tfentity* them)
 {
@@ -206,6 +207,33 @@ static void paint()
 	}
 }
 
+static void unmasker()
+{
+	int maxplayers = ifs::engine->GetMaxClients();
+
+	for (int i = ENT_START; i < maxplayers; i++)
+	{
+		tfplayer* pl = (tfplayer*)ifs::entities->GetClientEntity(i);
+		if (!pl || !pl->is_drawable() ||
+				!(friendlies->m_nValue || pl->m_iTeamNum() != tfplayer::me()->m_iTeamNum()) ||
+				pl->m_iClass() != tfclass::spy)
+			continue;
+
+		if (unmask->m_nValue)
+			pl->m_nPlayerCond() &= COND_DISGUISED;
+		if (uncloak->m_nValue)
+			pl->m_nPlayerCond() &= COND_CLOAKED;
+	}
+}
+// Runs after CreateMove
+static void frame(CUserCmd*)
+{
+	if (!esp_enabled->m_nValue)
+		return;
+	if (unmask->m_nValue || uncloak->m_nValue)
+		unmasker();
+}
+
 static void unload()
 {
 	delete esp_enabled;
@@ -218,6 +246,8 @@ static void unload()
 	delete cursor;
 	delete draw_objs;
 	delete draw_projs;
+	delete unmask;
+	delete uncloak;
 }
 void esp::init()
 {
@@ -231,8 +261,11 @@ void esp::init()
 	cursor =	new ConVar(PREFIX "esp_cursor", "1");
 	draw_objs =	new ConVar(PREFIX "esp_objs", "1");
 	draw_projs=	new ConVar(PREFIX "esp_proj", "1");
+	unmask =	new ConVar(PREFIX "esp_unmask", "1", 0, "Remove spies' disguises");
+	uncloak =	new ConVar(PREFIX "esp_uncloak", "1", 0, "Remove spies' cloaks");
 
 	basehook::post_paint(paint, "esp");
+	basehook::post_move(frame, "esp");
 	exit::handle(unload);
 }
 
