@@ -132,7 +132,7 @@ void trigger::init()
 	enabled = new ConVar(PREFIX "trigger_auto", "0", 0, "Enable or disable the triggerbot");
 	hit_objs = new ConVar(PREFIX "trigger_objects", "1", 0, "Objects get hit");
 	reflect = new ConVar(PREFIX "trigger_reflect", "1", 0, "Reflect projectiles");
-	reflect_dist = new ConVar(PREFIX "trigger_reflect_distance", "128", 0, "Maximum distance to reflect projectile");
+	reflect_dist = new ConVar(PREFIX "trigger_reflect_distance", "256", 0, "Maximum distance to reflect projectile");
 	contfdebug = new ConCommand(PREFIX "trigger_debug",
 			[](){do_debug = true;}, "Get information of the player pointed at");
 	basehook::post_move(frame, "trigger");

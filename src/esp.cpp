@@ -99,11 +99,10 @@ static void draw(tfentity* pl, color c, float distance)
 	color white {255,255,255,255};
 
 	// Print type of object
-	bottom_left.y += fontheight;
 	draw::string(bottom_left, white, pl->type_name());
 
 	// Draw health
-	if (pl->type() == tftype::object)
+	if (pl->type() == tftype::object && pl->damageable())
 	{
 		int health = ((tfobject*)pl)->m_iHealth();
 		if (health)
@@ -224,10 +223,10 @@ void esp::init()
 	esp_enabled=new ConVar(PREFIX "esp", "0");
 	box =		new ConVar(PREFIX "esp_box", "1");
 	bones =		new ConVar(PREFIX "esp_bones", "0");
-	maxdist =	new ConVar(PREFIX "esp_maxdist", "8192");
+	maxdist =	new ConVar(PREFIX "esp_maxdist", "4000");
 	friendlies=	new ConVar(PREFIX "esp_friendlies", "0");
 	sightdist =	new ConVar(PREFIX "esp_sightdist", "0");
-	falloff =	new ConVar(PREFIX "esp_falloff", "3000");
+	falloff =	new ConVar(PREFIX "esp_falloff", "1250");
 	cursor =	new ConVar(PREFIX "esp_cursor", "1");
 	draw_objs =	new ConVar(PREFIX "esp_objs", "1");
 	draw_projs=	new ConVar(PREFIX "esp_proj", "1");
