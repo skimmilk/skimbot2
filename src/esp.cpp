@@ -40,7 +40,9 @@ static float dist(tfentity* me, tfentity* them)
 	return sqrtf(diff.LengthSqr());
 }
 // Draw box around object
-static bool simple_esp(tfentity* them, float width, float height, color c, point& bottom_left)
+// on_cursor is set to true if the cursor is inside the box
+static bool simple_esp(tfentity* them, float width, float height, color c,
+		point& bottom_left, bool& on_cursor)
 {
 	Vector mins = them->GetAbsOrigin();
 	Vector maxs = mins;
@@ -77,6 +79,12 @@ static bool simple_esp(tfentity* them, float width, float height, color c, point
 	draw::line(ptl, pbl, c);
 
 	bottom_left = pbl;
+
+	int x,y;
+	ifs::engine->GetScreenSize(x, y);
+	x /= 2;
+	y /= 2;
+	on_cursor = (x >= ptl.x && y >= ptl.y && x <= pbr.x && y <= pbr.y);
 	return true;
 }
 // Draw the ESP on given entity (assumes valid but still does additional checks)
@@ -89,11 +97,13 @@ static void draw(tfentity* pl, color c, float distance)
 		width = 8;
 		height = 16;
 	}
+	bool on_cursor = false;
 	// Draw simple ESP
-	if (!simple_esp(pl, width, height, c, bottom_left))
+	if (!simple_esp(pl, width, height, c, bottom_left, on_cursor))
 		return;
 
-	if (distance > falloff->m_fValue)
+	// Draw complex ESP if the cursor is hovering over the entity
+	if (!on_cursor && distance > falloff->m_fValue)
 		return;
 
 	int fontheight = 10;
