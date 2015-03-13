@@ -32,6 +32,7 @@ enum class tfslot : int { primary = 1, secondary, melee, menu };
 #define COND_CLOAKED 16
 #define COND_UBER 32
 #define COND_TAUNT 128
+#define COND_FIRE 4194304
 #define COND_OVERHEALED 8388608
 
 enum class tfhitbox : int
@@ -100,7 +101,7 @@ public:
 	DEFNETVAR(Vector, m_vecOrigin, "CBasePlayer");
 	DEFNETVAR(int, m_iTeamNum, "CBasePlayer");
 	DEFNETVAR(int, m_hActiveWeapon, "CBasePlayer");
-	DEFNETVAR(int, m_bGlowEnabled, "CBasePlayer");
+	DEFNETVAR(bool, m_bGlowEnabled, "CBasePlayer");
 
 	DEFNETVAR(tfclass, m_iClass, "CTFPlayer", "m_PlayerClass");
 	DEFNETVAR(int, m_nPlayerCond, "CTFPlayer", "m_Shared");

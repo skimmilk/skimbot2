@@ -23,7 +23,6 @@ namespace skim
 
 ConVar* esp_enabled;
 ConVar* box;
-ConVar* bones;
 ConVar* maxdist;
 ConVar* friendlies; // Draw friendlies
 ConVar* sightdist; // Length of the line-of-sight bar
@@ -33,6 +32,7 @@ ConVar* draw_objs; // Draw objects (sentries, dispencers, teleporters)
 ConVar* draw_projs; // Draw projectiles
 ConVar* unmask; // Remove spies' disguises
 ConVar* uncloak; // Remove spies' cloaks
+ConVar* glow; // Enable the glow effect on entities
 
 static float dist(tfentity* me, tfentity* them)
 {
@@ -192,7 +192,7 @@ static void paint()
 		draw(pl, drawcolor, distance);
 
 		// Set closest entity
-		if (pl->damageable() && distance < min_dist)
+		if (distance < min_dist && pl->damageable())
 		{
 			min_dist = distance;
 			closest = pl;
@@ -217,22 +217,61 @@ static void paint()
 	}
 }
 
-static void unmasker()
+static void unmasker(tfplayer* pl)
+{
+	if (!(friendlies->m_nValue || pl->m_iTeamNum() != tfplayer::me()->m_iTeamNum()) ||
+			pl->m_iClass() != tfclass::spy)
+		return;
+
+	if (unmask->m_nValue)
+		pl->m_nPlayerCond() &= COND_DISGUISED;
+	if (uncloak->m_nValue)
+		pl->m_nPlayerCond() &= COND_CLOAKED;
+}
+// Update glow effect by either turning it on or off
+static void setglow(tfentity* ent)
+{
+	if (!glow->m_nValue || (ent->type() != tftype::player && ent->type() != tftype::projectile))
+		return;
+
+	int team = ((tfplayer*)ent)->m_iTeamNum();
+	float distance = dist(ent, tfplayer::me());
+	bool wanted = (friendlies->m_nValue || team != tfplayer::me()->m_iTeamNum()) &&
+			distance < falloff->m_fValue;
+	bool& current = ((tfplayer*)ent)->m_bGlowEnabled();
+
+	if (wanted == current)
+		// Nothing to do here
+		return;
+
+	current = wanted;
+
+	typedef void (*setglowfn)(tfentity*);
+	setglowfn* vmt = *(setglowfn**)ent;
+	setglowfn funk;
+
+	// Offset of C_TFPlayer::UpdateGlowEffect is 289
+	if (wanted)
+		funk = vmt[289]; // UpdateGlowEffect
+	else
+		funk = vmt[290]; // DestroyGlowEffect
+	funk(ent);
+}
+// ESP that runs on createmove
+static void cmesp()
 {
 	int maxplayers = ifs::engine->GetMaxClients();
 
-	for (int i = ENT_START; i < maxplayers; i++)
+	for (int i = ENT_START; i < ENT_MAX; i++)
 	{
-		tfplayer* pl = (tfplayer*)ifs::entities->GetClientEntity(i);
-		if (!pl || !pl->is_drawable() ||
-				!(friendlies->m_nValue || pl->m_iTeamNum() != tfplayer::me()->m_iTeamNum()) ||
-				pl->m_iClass() != tfclass::spy)
+		tfentity* pl = (tfentity*)ifs::entities->GetClientEntity(i);
+		if (!pl)
 			continue;
 
-		if (unmask->m_nValue)
-			pl->m_nPlayerCond() &= COND_DISGUISED;
-		if (uncloak->m_nValue)
-			pl->m_nPlayerCond() &= COND_CLOAKED;
+		if (i < maxplayers)
+			unmasker((tfplayer*)pl);
+
+		setglow(pl);
 	}
 }
 // Runs after CreateMove
@@ -240,15 +279,14 @@ static void frame(CUserCmd*)
 {
 	if (!esp_enabled->m_nValue)
 		return;
-	if (unmask->m_nValue || uncloak->m_nValue)
-		unmasker();
+	if (glow->m_nValue || unmask->m_nValue || uncloak->m_nValue)
+		cmesp();
 }
 
 static void unload()
 {
 	delete esp_enabled;
 	delete box;
-	delete bones;
 	delete maxdist;
 	delete friendlies;
 	delete sightdist;
@@ -258,12 +296,12 @@ static void unload()
 	delete draw_projs;
 	delete unmask;
 	delete uncloak;
+	delete glow;
 }
 void esp::init()
 {
 	esp_enabled=new ConVar(PREFIX "esp", "0");
 	box =		new ConVar(PREFIX "esp_box", "1");
-	bones =		new ConVar(PREFIX "esp_bones", "0");
 	maxdist =	new ConVar(PREFIX "esp_maxdist", "4000");
 	friendlies=	new ConVar(PREFIX "esp_friendlies", "0");
 	sightdist =	new ConVar(PREFIX "esp_sightdist", "0");
@@ -273,6 +311,7 @@ void esp::init()
 	draw_projs=	new ConVar(PREFIX "esp_proj", "1");
 	unmask =	new ConVar(PREFIX "esp_unmask", "1", 0, "Remove spies' disguises");
 	uncloak =	new ConVar(PREFIX "esp_uncloak", "1", 0, "Remove spies' cloaks");
+	glow =		new ConVar(PREFIX "esp_glow", "1", 0, "Use the glow effect with ESP");
 
 	basehook::post_paint(paint, "esp");
 	basehook::post_move(frame, "esp");
