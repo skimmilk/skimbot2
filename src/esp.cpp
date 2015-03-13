@@ -262,15 +262,13 @@ static void cmesp()
 {
 	int maxplayers = ifs::engine->GetMaxClients();
 
-	for (int i = ENT_START; i < ENT_MAX; i++)
+	for (int i = ENT_START; i < maxplayers; i++)
 	{
 		tfentity* pl = (tfentity*)ifs::entities->GetClientEntity(i);
 		if (!pl)
 			continue;
 
-		if (i < maxplayers)
-			unmasker((tfplayer*)pl);
-
+		unmasker((tfplayer*)pl);
 		setglow(pl);
 	}
 }
