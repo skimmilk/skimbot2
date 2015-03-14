@@ -22,14 +22,15 @@ class player_filter : public ITraceFilter
 public:
 	player_filter(int indexIgnore) : ignore(indexIgnore) {}
 
-	bool ShouldHitEntity(IHandleEntity* ent, int) override
+	bool ShouldHitEntity(IHandleEntity* handle, int) override
 	{
-		CBaseHandle asdf = ent->GetRefEHandle();
+		CBaseHandle asdf = handle->GetRefEHandle();
 
 		// For some reason GetClientEntityFromHandle crashes
 		// Manually get its entity index
-		tfplayer* player = (tfplayer*)ifs::entities->GetClientEntity(asdf & 0x0fff)->GetBaseEntity();
-		return player->entindex() != ignore;
+		tfentity* ent = (tfentity*)ifs::entities->GetClientEntity(asdf & 0x0fff)->GetBaseEntity();
+		return ent->entindex() != ignore &&
+				ent->GetClientClass()->m_ClassID != netvar::classid<_id>("CFuncRespawnRoomVisualizer");
 	}
 	TraceType_t GetTraceType() const override
 	{
