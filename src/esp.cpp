@@ -231,9 +231,9 @@ static void unmasker(tfplayer* pl)
 		return;
 
 	if (unmask->m_nValue)
-		pl->m_nPlayerCond() &= COND_DISGUISED;
+		pl->m_nPlayerCond() &= ~COND_DISGUISED;
 	if (uncloak->m_nValue)
-		pl->m_nPlayerCond() &= COND_CLOAKED;
+		pl->m_nPlayerCond() &= ~COND_CLOAKED;
 }
 // Update glow effect by either turning it on or off
 static void setglow(tfentity* ent)
