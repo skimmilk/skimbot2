@@ -34,6 +34,8 @@ ConVar* unmask; // Remove spies' disguises
 ConVar* uncloak; // Remove spies' cloaks
 ConVar* glow; // Enable the glow effect on entities
 
+int highlighted_ent; // One of the entities that is being aimed at by the user
+
 static float dist(tfentity* me, tfentity* them)
 {
 	Vector diff = me->GetAbsOrigin() - them->GetAbsOrigin();
@@ -105,6 +107,8 @@ static void draw(tfentity* pl, color c, float distance)
 	// Draw complex ESP if the cursor is hovering over the entity
 	if (!on_cursor && distance > falloff->m_fValue)
 		return;
+	if (on_cursor)
+		highlighted_ent = pl->entindex();
 
 	int fontheight = 10;
 	color white {255,255,255,255};
@@ -162,10 +166,13 @@ static bool can_draw(tfentity* ent, float distance)
 			(friendlies->m_nValue || ((tfplayer*)ent)->m_iTeamNum() != tfplayer::me()->m_iTeamNum()) &&
 			distance < maxdist->m_fValue;
 }
+// Runs on PaintTraverse
 static void paint()
 {
 	if (!esp_enabled->m_nValue)
 		return;
+
+	highlighted_ent = 0;
 
 	float min_dist = 8192;
 	tfplayer* me = tfplayer::me();
@@ -236,8 +243,9 @@ static void setglow(tfentity* ent)
 
 	int team = ((tfplayer*)ent)->m_iTeamNum();
 	float distance = dist(ent, tfplayer::me());
-	bool wanted = (friendlies->m_nValue || team != tfplayer::me()->m_iTeamNum()) &&
-			distance < falloff->m_fValue;
+	bool wanted = ((friendlies->m_nValue || team != tfplayer::me()->m_iTeamNum()) &&
+			distance < falloff->m_fValue) ||
+					ent->entindex() == highlighted_ent;
 	bool& current = ((tfplayer*)ent)->m_bGlowEnabled();
 
 	if (wanted == current)
