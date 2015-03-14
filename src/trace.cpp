@@ -30,7 +30,9 @@ public:
 		// Manually get its entity index
 		tfentity* ent = (tfentity*)ifs::entities->GetClientEntity(asdf & 0x0fff)->GetBaseEntity();
 		return ent->entindex() != ignore &&
-				ent->GetClientClass()->m_ClassID != netvar::classid<_id>("CFuncRespawnRoomVisualizer");
+				ent->GetClientClass()->m_ClassID != netvar::classid<_id>("CFuncRespawnRoomVisualizer") &&
+				ent->GetClientClass()->m_ClassID != netvar::classid<_id>("CFuncAreaPortalWindow") &&
+				ent->GetClientClass()->m_ClassID != netvar::classid<_id>("CTFMedigunShield");
 	}
 	TraceType_t GetTraceType() const override
 	{
