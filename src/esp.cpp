@@ -8,6 +8,7 @@
 #include "esp.h"
 
 #include <math.h>
+#include <map>
 #include "const.h"
 #include "basehook.h"
 #include "tfplayer.h"
@@ -36,6 +37,17 @@ ConVar* glow; // Enable the glow effect on entities
 
 int highlighted_ent; // One of the entities that is being aimed at by the user
 
+// Entities and the colors they need to be drawn with
+std::map<int, color> highlights, hlstage;
+
+const color& get_highlight(int index, const color& def)
+{
+	auto it = highlights.find(index);
+	if (it == highlights.end())
+		return def;
+	return it->second;
+}
+
 static float dist(tfentity* me, tfentity* them)
 {
 	Vector diff = me->GetAbsOrigin() - them->GetAbsOrigin();
@@ -43,7 +55,7 @@ static float dist(tfentity* me, tfentity* them)
 }
 // Draw box around object
 // on_cursor is set to true if the cursor is inside the box
-static bool simple_esp(tfentity* them, float width, float height, color c,
+static bool simple_esp(tfentity* them, float width, float height, const color& c,
 		point& bottom_left, bool& on_cursor)
 {
 	Vector mins = them->GetAbsOrigin();
@@ -90,7 +102,7 @@ static bool simple_esp(tfentity* them, float width, float height, color c,
 	return true;
 }
 // Draw the ESP on given entity (assumes valid but still does additional checks)
-static void draw(tfentity* pl, color c, float distance)
+static void draw(tfentity* pl, const color& c, float distance)
 {
 	point bottom_left;
 	float width = 16, height = 85;
@@ -100,8 +112,9 @@ static void draw(tfentity* pl, color c, float distance)
 		height = 16;
 	}
 	bool on_cursor = false;
+	const color& highlight = get_highlight(pl->entindex(), c);
 	// Draw simple ESP
-	if (!simple_esp(pl, width, height, c, bottom_left, on_cursor))
+	if (!simple_esp(pl, width, height, highlight, bottom_left, on_cursor))
 		return;
 
 	// Draw complex ESP if the cursor is hovering over the entity
@@ -166,6 +179,13 @@ static bool can_draw(tfentity* ent, float distance)
 			(friendlies->m_nValue || ((tfplayer*)ent)->m_iTeamNum() != tfplayer::me()->m_iTeamNum()) &&
 			distance < maxdist->m_fValue;
 }
+// Returns the enemy team color
+color teamcolor(int teamnum)
+{
+	if (teamnum == 3)
+		return {255, 0, 0, 255};
+	return {10, 10, 255, 255};
+}
 // Runs on PaintTraverse
 static void paint()
 {
@@ -178,9 +198,7 @@ static void paint()
 	tfplayer* me = tfplayer::me();
 	tfentity* closest = 0;
 
-	color drawcolor {10, 10, 255, 255};
-	if (me->m_iTeamNum() == 3)
-		drawcolor = {255, 0, 0, 255};
+	color drawcolor = teamcolor(me->m_iTeamNum());
 
 	// Loop over every networked entity
 	for (int i = 1; i < ENT_MAX; i++)
@@ -287,6 +305,18 @@ static void frame(CUserCmd*)
 		return;
 	if (glow->m_nValue || unmask->m_nValue || uncloak->m_nValue)
 		cmesp();
+
+	// Clear the highlight stager
+	highlights.clear();
+}
+
+void esp::highlight(int index)
+{
+	highlights[index] = {255, 0, 255, 255};
+}
+void esp::highlight(int index, const color& c)
+{
+	highlights[index] = c;
 }
 
 static void unload()

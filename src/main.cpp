@@ -35,12 +35,12 @@ extern "C" void libmain()
 	skim::cvar_hook::init();
 	skim::basehook::init();
 
+	skim::draw::init();
+	skim::esp::init();
+
 	skim::trigger::init();
 	skim::bhop::init();
 	skim::spin::init();
-
-	skim::draw::init();
-	skim::esp::init();
 
 	// Test netvars
 	dumpall = new ConCommand("dumpall", skim::netvar::dumpnets);

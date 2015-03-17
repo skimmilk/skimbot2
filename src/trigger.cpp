@@ -15,6 +15,7 @@
 #include "tfdebug.h"
 #include "exit.h"
 #include "ifs.h"
+#include "esp.h"
 #include "sdk/engine.h"
 #include "sdk/cvar.h"
 
@@ -76,8 +77,13 @@ static void triggerbot(CUserCmd* cmd)
 	if (me->m_iClass() == tfclass::spy &&
 			me->weapon()->slot() == tfslot::melee && me->weapon()->m_bReadyToBackstab())
 		cmd->buttons |= IN_ATTACK;
-	else if ((en = enemy(cmd)) && can_fire(en))
-		cmd->buttons |= IN_ATTACK;
+	else if ((en = enemy(cmd)))
+	{
+		if (can_fire(en))
+			cmd->buttons |= IN_ATTACK;
+		// Highlight player to show we are eyeing it
+		esp::highlight(en->entindex());
+	}
 }
 static void reflectbot(CUserCmd* cmd)
 {
