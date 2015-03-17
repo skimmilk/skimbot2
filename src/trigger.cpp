@@ -26,6 +26,7 @@ ConVar* enabled;
 ConVar* hit_objs;
 ConVar* reflect;
 ConVar* reflect_dist;
+ConVar* reflect_fov;
 ConCommand* contfdebug;
 bool do_debug;
 
@@ -87,13 +88,14 @@ static void triggerbot(CUserCmd* cmd)
 }
 static void reflectbot(CUserCmd* cmd)
 {
-	if (tfplayer::me()->m_iClass() != tfclass::pyro ||
-			!tfplayer::me()->weapon() ||
-			tfplayer::me()->weapon()->slot() != tfslot::primary)
+	tfplayer* me = tfplayer::me();
+	if (me->m_iClass() != tfclass::pyro ||
+			!me->weapon() ||
+			me->weapon()->slot() != tfslot::primary)
 		return;
 
-	int current_team = tfplayer::me()->m_iTeamNum();
-	Vector eyepos = tfplayer::me()->local_eyes();
+	int current_team = me->m_iTeamNum();
+	Vector eyepos = me->local_eyes();
 
 	for (int i = ENT_START; i < ENT_MAX; i++)
 	{
@@ -103,6 +105,15 @@ static void reflectbot(CUserCmd* cmd)
 
 		float distance = sqrtf((eyepos - ent->GetAbsOrigin()).LengthSqr());
 		if (distance > reflect_dist->m_fValue)
+			continue;
+
+		// Get angle difference
+		QAngle toent, eyes;
+		VectorAngles(ent->GetAbsOrigin() - me->local_eyes(), toent);
+		ifs::engine->GetViewAngles(eyes);
+		float d1 = 180.f - fabsf(fabsf(toent.x - eyes.x) - 180.f);
+		float d2 = 180.f - fabsf(fabsf(toent.y - eyes.y) - 180.f);
+		if (d1 + d2 > reflect_fov->m_fValue)
 			continue;
 
 		cmd->buttons |= IN_ATTACK2;
@@ -132,12 +143,14 @@ static void unload()
 	delete hit_objs;
 	delete reflect;
 	delete reflect_dist;
+	delete reflect_fov;
 }
 void trigger::init()
 {
 	enabled = new ConVar(PREFIX "trigger_auto", "0", 0, "Enable or disable the triggerbot");
 	hit_objs = new ConVar(PREFIX "trigger_objects", "1", 0, "Objects get hit");
 	reflect = new ConVar(PREFIX "trigger_reflect", "1", 0, "Reflect projectiles");
+	reflect_fov = new ConVar(PREFIX "trigger_reflect_fov", "40", 0, "FOV reflectbot has");
 	reflect_dist = new ConVar(PREFIX "trigger_reflect_distance", "256", 0, "Maximum distance to reflect projectile");
 	contfdebug = new ConCommand(PREFIX "trigger_debug",
 			[](){do_debug = true;}, "Get information of the player pointed at");
