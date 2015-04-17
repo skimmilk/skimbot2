@@ -60,17 +60,17 @@ ConVar* cvar_hook::hide(const char* name)
 	std::string newname = PREFIX "hooked_" + std::string(name);
 	std::string originalname (original->m_pszName);
 
-	// Variable to take the original's place
+	// Replace the old cvar's name
+	original->m_pszName = (const char*)malloc(newname.size() + 1);
+	strcpy((char*)original->m_pszName, newname.c_str());
+
+	// Create the new cvar with the original name
 	ConVar* newvar = new ConVar(originalname.c_str(), original->m_pszDefaultValue,
 			original->m_nFlags, "Hooked convar");
 	newvar->m_fMaxVal = original->m_fMaxVal;
 	newvar->m_fMinVal = original->m_fMinVal;
 	newvar->m_bHasMax = original->m_bHasMax;
 	newvar->m_bHasMin = original->m_bHasMin;
-
-	// Replace the name
-	original->m_pszName = (const char*)malloc(newname.size() + 1);
-	strcpy((char*)original->m_pszName, newname.c_str());
 
 	// Unlock the original
 	unlock(original);
