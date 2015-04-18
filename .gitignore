@@ -25,3 +25,4 @@ src/skeltal.o
 src/draw.o
 src/tfplayer.o
 src/esp.o
+steam.o

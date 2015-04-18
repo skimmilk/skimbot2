@@ -20,6 +20,7 @@ typedef int HSteamPipe;
 typedef int HSteamUser;
 typedef int AppId_t;
 typedef int int32;
+typedef unsigned int uint32;
 
 typedef int EUniverse;
 typedef int EChatEntryType;
