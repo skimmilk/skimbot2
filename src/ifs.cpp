@@ -42,9 +42,9 @@ IGameResources*		(*ifs::resources)();
 IClientEntity*		(*ifs::player)();
 
 IAchievementMgr*	ifs::achievements;
-ISteamUserStats*	ifs::steam_stats;
-ISteamFriends*		ifs::steam_friends;
-ISteamClient*		ifs::steam_client;
+ISteamUserStats*	(*ifs::steam_stats)();
+ISteamFriends*		(*ifs::steam_friends)();
+ISteamClient*		(*ifs::steam_client)();
 
 template <typename T>
 static void* set(CreateInterfaceFn cfn, T*& a, const char* ifname)
@@ -63,26 +63,25 @@ static void* waitfor(const char* directory)
 }
 #define CHK(f, v, s) if (!set(f, v, s) && !window("Failed to acquire " s ", continue?")) return false;
 
-static bool load_steam(CreateInterfaceFn interface_factory)
+static bool load_steam(const std::string& loc)
 {
-	if (false && window("Open steam?"))
+	void* steam_handle = waitfor(loc.c_str());
+	if (!steam_handle)
 	{
-		// Open up steam
-		CHK(interface_factory, ifs::steam_client, "SteamClient016");
-
-		window("Opening steam pipe");
-		HSteamPipe pipe = ifs::steam_client->CreateSteamPipe();
-		if (!pipe) window("Could not get steam pipe");
-
-		window("Opening steam user");
-		HSteamUser user = ifs::steam_client->ConnectToGlobalUser(pipe);
-		if (!user) window("Could not get steam user");
-
-		window("Opening steam friends");
-		ifs::steam_friends = ifs::steam_client->GetISteamFriends(user, pipe,
-				"STEAMUSERSTATS_INTERFACE_VERSION014");
-		if (!ifs::steam_friends) window("Could not get steam friends interface");
+		window("Failed to open steam library");
+		return false;
 	}
+
+	ifs::steam_client = (decltype(ifs::steam_client))dlsym(steam_handle, "SteamClient");
+	ifs::steam_friends = (decltype(ifs::steam_friends))dlsym(steam_handle, "SteamFriends");
+	ifs::steam_stats = (decltype(ifs::steam_stats))dlsym(steam_handle, "SteamUserStats");
+
+	if (!ifs::steam_client || !ifs::steam_friends || !ifs::steam_stats)
+	{
+		window("Failed to load steam library functions");
+		return false;
+	}
+
 	return true;
 }
 static bool load_client(const std::string& directory)
@@ -198,19 +197,18 @@ bool ifs::load()
 	//CHK(interface_factory, ifs::surface, "VGUI_Surface034");
 	CHK(interface_factory, ifs::studio_render, "VStudioRender025");
 
-	if (!load_steam(interface_factory))
-		return false;
-
 	// The client library takes a while to load
 	std::string directory (ifs::engine->GetGameDirectory());
-	directory += "/bin/client.so";
+	std::string clientloc = directory + "/bin/client.so";
+	std::string steamloc = directory + "/../bin/libsteam_api.so";
 
-	if (!load_client(directory) ||
-			!load_gameres(directory) ||
-			!load_getplayer(directory) ||
+	if (!load_client(clientloc) ||
+			!load_gameres(clientloc) ||
+			!load_getplayer(clientloc) ||
 			!load_input() ||
-			!load_surface(directory) ||
-			!load_globals(directory))
+			!load_surface(clientloc) ||
+			!load_globals(clientloc) ||
+			!load_steam(steamloc))
 		return false;
 
 	return true;
