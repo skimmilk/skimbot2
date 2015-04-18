@@ -31,7 +31,7 @@ bool steam::is_friend(int entnum)
 	id.m_steamid.m_comp.m_unAccountInstance = 1;
 
 	// k_EFriendFlagImmediate = 4
-	return ifs::steam_friends()->HasFriend(id, 4);
+	return ifs::steam_friends->HasFriend(id, 4);
 }
 
 } /* namespace skim */

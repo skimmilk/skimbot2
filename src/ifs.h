@@ -65,9 +65,9 @@ public:
 	static IInput*				input;
 
 	static IAchievementMgr*		achievements;
-	static ISteamUserStats*		(*steam_stats)();
-	static ISteamFriends*		(*steam_friends)();
-	static ISteamClient*		(*steam_client)();
+	static ISteamUserStats*		steam_stats;
+	static ISteamFriends*		steam_friends;
+	static ISteamClient*		steam_client;
 
 	static bool load();
 };

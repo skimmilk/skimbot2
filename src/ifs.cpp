@@ -42,9 +42,9 @@ IGameResources*		(*ifs::resources)();
 IClientEntity*		(*ifs::player)();
 
 IAchievementMgr*	ifs::achievements;
-ISteamUserStats*	(*ifs::steam_stats)();
-ISteamFriends*		(*ifs::steam_friends)();
-ISteamClient*		(*ifs::steam_client)();
+ISteamUserStats*	ifs::steam_stats;
+ISteamFriends*		ifs::steam_friends;
+ISteamClient*		ifs::steam_client;
 
 template <typename T>
 static void* set(CreateInterfaceFn cfn, T*& a, const char* ifname)
@@ -72,13 +72,41 @@ static bool load_steam(const std::string& loc)
 		return false;
 	}
 
-	ifs::steam_client = (decltype(ifs::steam_client))dlsym(steam_handle, "SteamClient");
-	ifs::steam_friends = (decltype(ifs::steam_friends))dlsym(steam_handle, "SteamFriends");
-	ifs::steam_stats = (decltype(ifs::steam_stats))dlsym(steam_handle, "SteamUserStats");
+	auto fn = (ISteamClient* (*) ())dlsym(steam_handle, "SteamClient");
+	ifs::steam_client = fn();
 
-	if (!ifs::steam_client || !ifs::steam_friends || !ifs::steam_stats)
+	if (!fn)
 	{
-		window("Failed to load steam library functions");
+		window("Could not get steam client");
+		return false;
+	}
+
+	HSteamPipe pipe = ifs::steam_client->CreateSteamPipe();
+	if (!pipe)
+	{
+		window("Could not get steam pipe");
+		return false;
+	}
+
+	HSteamUser user = ifs::steam_client->ConnectToGlobalUser(pipe);
+	if (!user)
+	{
+		window("Could not get steam user");
+		return false;
+	}
+
+	ifs::steam_friends = ifs::steam_client->GetISteamFriends(user, pipe,
+			"SteamFriends014");
+	if (!ifs::steam_friends)
+	{
+		window("Could not get steam friends interface");
+		return false;
+	}
+
+	ifs::steam_stats = ifs::steam_client->GetISteamUserStats(user, pipe, "STEAMUSERSTATS_INTERFACE_VERSION011");
+	if (!ifs::steam_stats)
+	{
+		window("Could not get steam stats interface");
 		return false;
 	}
 
