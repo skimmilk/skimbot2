@@ -19,6 +19,7 @@
 #include "spin.h"
 #include "draw.h"
 #include "esp.h"
+#include "achievement.h"
 #include "sdk/engine.h"
 
 ConCommand* dumpall;
@@ -33,6 +34,7 @@ extern "C" void libmain()
 
 	skim::exit::init();
 	skim::cvar_hook::init();
+	skim::achievement::init();
 	skim::basehook::init();
 
 	skim::draw::init();

@@ -26,3 +26,4 @@ src/draw.o
 src/tfplayer.o
 src/esp.o
 steam.o
+src/achievement.o

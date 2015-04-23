@@ -25,7 +25,8 @@ SOURCES=src/main.cpp\
 	src/draw.cpp\
 	src/tfplayer.cpp\
 	src/esp.cpp\
-	src/steam.cpp
+	src/steam.cpp\
+	src/achievement.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 HACK=libskimbot.so
 
