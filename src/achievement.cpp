@@ -17,6 +17,8 @@
 #include "sourceutil.h"
 #include "sdk/steam.h"
 #include "sdk/cvar.h"
+#include "sdk/achievable.h"
+#include "sdk/engine.h"
 
 namespace skim
 {
@@ -31,17 +33,15 @@ ConCommand* c_relock;
 // Unlock a random achievement
 void ach_unlock()
 {
-	std::vector<const char*> anchovies;
+	auto ach = ifs::engine->GetAchievementMgr();
+	int max = ach->GetAchievementCount();
+	std::vector<IAchievement*> anchovies;
 
-	for (int i = 0; i < NUMACHIEVE; i++)
+	for (int i = 0; i < max; i++)
 	{
-		const char* achname = ifs::steam_stats->GetAchievementName(i);
-		if (!achname)
-			break;
-
-		bool unlocked;
-		if (ifs::steam_stats->GetAchievement(achname, &unlocked) && !unlocked)
-			anchovies.push_back(achname);
+		auto it = ach->GetAchievementByIndex(i);
+		if (!it->IsAchieved())
+			anchovies.push_back(it);
 	}
 
 	if (!anchovies.size())
@@ -50,11 +50,8 @@ void ach_unlock()
 		return;
 	}
 
-	const char* picked = anchovies[rand() % anchovies.size()];
-	con("Unlocked " + std::string(picked));
-
-	ifs::steam_stats->SetAchievement(picked);
-	ifs::steam_stats->StoreStats();
+	ach->AwardAchievement(
+			anchovies[rand() % anchovies.size()]->GetAchievementID());
 }
 void ach_list()
 {
@@ -79,6 +76,7 @@ void ach_relock()
 	}
 
 	ifs::steam_stats->StoreStats();
+	ifs::engine->GetAchievementMgr()->DownloadUserData();
 }
 
 void ach_done()
