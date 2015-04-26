@@ -23,10 +23,10 @@ THANKS MR skeltal
 public:
 	// Get the position of a hitbox
 	// Factor is what extent of the hitbox (1 = top-right, 0 = bottom-left, .5 = middle)
-	static Vector pos(tfplayer* player, int hitbox, extents ext = extents::middle);
+	static Vector pos(tfplayer* player, tfhitbox hitbox, extents ext = extents::middle);
 
 	// Get a simple bounding box for a hitbox
-	static void bbox(tfplayer* player, int hitbox, Vector& min, Vector& max);
+	static void bbox(tfplayer* player, tfhitbox hitbox, Vector& min, Vector& max);
 };
 
 } /* namespace skim */
