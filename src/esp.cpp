@@ -16,6 +16,7 @@
 #include "draw.h"
 #include "ifs.h"
 #include "sourceutil.h"
+#include "skeltal.h"
 #include "sdk/cvar.h"
 #include "sdk/engine.h"
 
@@ -228,10 +229,16 @@ static void paint()
 	if (cursor->m_nValue && closest)
 	{
 		point enemy;
-		Vector world = closest->GetAbsOrigin();
+		Vector world;
 
 		if (closest->type() == tftype::player)
+		{
 			world.z += 40;
+			world = skeltal::pos((tfplayer*)closest, tfhitbox::HITBOX_HEAD);
+		}
+		else
+			world = closest->GetAbsOrigin();
+
 		int w, h;
 		ifs::engine->GetScreenSize(w, h);
 
