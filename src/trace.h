@@ -27,6 +27,7 @@ public:
 	static tfentity* sight(const Vector& start, const QAngle& viewangle, int idignore);
 	// Determines if player can see player, quick
 	static bool can_see_fast(const Vector& start, tfentity* pl);
+	static bool can_see_fast(const Vector& start, const Vector& end, tfentity* filter);
 };
 
 } /* namespace skim */

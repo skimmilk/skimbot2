@@ -75,12 +75,17 @@ bool trace::can_see_fast(const Vector& start, tfentity* pl)
 	Vector middle = pl->GetAbsOrigin();
 	middle.y += 32;
 
-	Vector difference = middle - start;
+	return can_see_fast(start, middle, pl);
+}
+
+bool trace::can_see_fast(const Vector& start, const Vector& end, tfentity* filter)
+{
+	Vector difference = end - start;
 	QAngle aim;
 	VectorAngles(difference, aim);
 	auto hit = ray(start, aim, ifs::engine->GetLocalPlayer());
 
-	return (tfplayer*)hit == pl;
+	return (tfplayer*)hit == filter;
 }
 
 } /* namespace skim */
