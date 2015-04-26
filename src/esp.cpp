@@ -288,7 +288,7 @@ static void cmesp()
 {
 	int maxplayers = ifs::engine->GetMaxClients();
 
-	for (int i = ENT_START; i < maxplayers; i++)
+	for (int i = ENT_START; i < maxplayers + 1; i++)
 	{
 		tfentity* pl = (tfentity*)ifs::entities->GetClientEntity(i);
 		if (!pl)
