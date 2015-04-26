@@ -352,8 +352,8 @@ void esp::init()
 	cursor =	new ConVar(PREFIX "esp_cursor", "1");
 	draw_objs =	new ConVar(PREFIX "esp_objs", "1");
 	draw_projs=	new ConVar(PREFIX "esp_proj", "1");
-	unmask =	new ConVar(PREFIX "esp_unmask", "1", 0, "Remove spies' disguises");
-	uncloak =	new ConVar(PREFIX "esp_uncloak", "1", 0, "Remove spies' cloaks");
+	unmask =	new ConVar(PREFIX "esp_unmask", "0", 0, "Remove spies' disguises");
+	uncloak =	new ConVar(PREFIX "esp_uncloak", "0", 0, "Remove spies' cloaks");
 	glow =		new ConVar(PREFIX "esp_glow", "1", 0, "Use the glow effect with ESP");
 
 	basehook::post_paint(paint, "esp");
