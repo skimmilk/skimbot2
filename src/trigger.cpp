@@ -156,6 +156,9 @@ void trigger::init()
 			[](){do_debug = true;}, "Get information of the player pointed at");
 	basehook::post_move(frame, "trigger");
 	exit::handle(unload);
+
+	ifs::engine->ClientCmd_Unrestricted("alias +st_trigger \"st_trigger_auto 1\";"
+			"alias -st_trigger \"st_trigger_auto 0\"");
 }
 
 } /* namespace skim */
