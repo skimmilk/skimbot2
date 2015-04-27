@@ -19,6 +19,7 @@
 #include "spin.h"
 #include "draw.h"
 #include "esp.h"
+#include "aim.h"
 #include "achievement.h"
 #include "sdk/engine.h"
 
@@ -40,6 +41,7 @@ extern "C" void libmain()
 	skim::draw::init();
 	skim::esp::init();
 
+	skim::aim::init();
 	skim::trigger::init();
 	skim::bhop::init();
 	skim::spin::init();

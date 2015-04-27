@@ -37,35 +37,34 @@ struct Ray_t
 
 	void Init( Vector const& start, Vector const& end )
 	{
-		VectorSubtract( end, start, m_Delta );
+		m_Delta = end - start;
 
 		m_IsSwept = (m_Delta.LengthSqr() != 0);
 
-		VectorClear( m_Extents );
+		m_Extents.x = m_Extents.y = m_Extents.z = 0;
 		m_IsRay = true;
 
 		// Offset m_Start to be in the center of the box...
-		VectorClear( m_StartOffset );
+		m_StartOffset.x = m_StartOffset.y = m_StartOffset.z = 0;
 		m_Start = start;
 	}
 
 	void Init( Vector const& start, Vector const& end, Vector const& mins, Vector const& maxs )
 	{
-		VectorSubtract( end, start, m_Delta );
+		m_Delta = end - start;
 
 		m_IsSwept = (m_Delta.LengthSqr() != 0);
 
-		VectorSubtract( maxs, mins, m_Extents );
-		VectorMultiply(m_Extents, .5);
+		m_Extents = maxs - mins;
+		m_Extents *= 0.5f;
 		m_IsRay = (m_Extents.LengthSqr() < 1e-6);
 
 		// Offset m_Start to be in the center of the box...
-		VectorAdd( mins, maxs, m_StartOffset );
-		VectorMultiply(m_StartOffset, .5);
-		VectorAdd( start, m_StartOffset, m_Start );
-		VectorMultiply(m_StartOffset, -1);
+		m_StartOffset = mins + maxs;
+		m_StartOffset *= 0.5f;
+		m_Start = start + m_StartOffset;
+		m_StartOffset *= -1.0f;
 	}
-
 	// compute inverse delta
 	Vector InvDelta() const
 	{
