@@ -20,6 +20,7 @@
 #include "draw.h"
 #include "esp.h"
 #include "aim.h"
+#include "nospread.h"
 #include "achievement.h"
 #include "sdk/engine.h"
 
@@ -45,6 +46,7 @@ extern "C" void libmain()
 	skim::trigger::init();
 	skim::bhop::init();
 	skim::spin::init();
+	skim::nospread::init();
 
 	// Test netvars
 	dumpall = new ConCommand("dumpall", skim::netvar::dumpnets);

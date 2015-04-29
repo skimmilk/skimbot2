@@ -28,3 +28,4 @@ src/esp.o
 steam.o
 src/achievement.o
 src/aim.o
+src/nospread.o

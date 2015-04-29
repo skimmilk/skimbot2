@@ -94,6 +94,35 @@ Vector AngleVectors(const QAngle& angle)
 
 	return (Vector){cp*cy, cp*sy, -sp};
 }
+void AngleVectors( const QAngle &angles, Vector *forward, Vector *right, Vector *up )
+{
+	float sr, sp, sy, cr, cp, cy;
+
+	SinCos( DEG2RAD( angles[1] ), &sy, &cy );
+	SinCos( DEG2RAD( angles[0] ), &sp, &cp );
+	SinCos( DEG2RAD( angles[2] ), &sr, &cr );
+
+	if (forward)
+	{
+		forward->x = cp*cy;
+		forward->y = cp*sy;
+		forward->z = -sp;
+	}
+
+	if (right)
+	{
+		right->x = (-1*sr*sp*cy+-1*cr*-sy);
+		right->y = (-1*sr*sp*sy+-1*cr*cy);
+		right->z = -1*sr*cp;
+	}
+
+	if (up)
+	{
+		up->x = (cr*sp*cy+-sr*-sy);
+		up->y = (cr*sp*sy+-sr*cy);
+		up->z = cr*cp;
+	}
+}
 void VectorAngles( const Vector& forward, QAngle &angles )
 {
 	float	tmp, yaw, pitch;
@@ -162,6 +191,22 @@ void VectorTransform (const float *in1, const matrix3x4_t& in2, float *out)
 	out[0] = DotProduct(in1, in2[0]) + in2[0][3];
 	out[1] = DotProduct(in1, in2[1]) + in2[1][3];
 	out[2] = DotProduct(in1, in2[2]) + in2[2][3];
+}
+float VectorNormalize(Vector& v)
+{
+	float length, ilength;
+
+	length = v[0]*v[0] + v[1]*v[1] + v[2]*v[2];
+	length = sqrtf(length);
+
+	if (length > 0.000001)
+	{
+		ilength = 1/length;
+		v[0] *= ilength;
+		v[1] *= ilength;
+		v[2] *= ilength;
+	}
+	return length;
 }
 vec_t DotProduct(const Vector& a, const Vector& b)
 {

@@ -46,6 +46,9 @@ ISteamUserStats*	ifs::steam_stats;
 ISteamFriends*		ifs::steam_friends;
 ISteamClient*		ifs::steam_client;
 
+float (*ifs::RandomFloat)(float,float);
+void (*ifs::RandomSeed)(int);
+
 template <typename T>
 static void* set(CreateInterfaceFn cfn, T*& a, const char* ifname)
 {
@@ -198,6 +201,21 @@ static bool load_globals(const std::string& directory)
 	ifs::globals = **(CGlobalVarsBase***)offset;
 	return true;
 }
+static bool load_randoms(const std::string& directory)
+{
+	std::string libvstdlib = directory + "/../bin/libvstdlib.so";
+	void* handle = dlopen(libvstdlib.c_str(), RTLD_NOLOAD);
+
+	ifs::RandomFloat = (float (*)(float,float))dlsym(handle, "RandomFloat");
+	if (!ifs::RandomFloat) window("Could not load RandomFloat");
+	ifs::RandomSeed = (void (*)(int))dlsym(handle, "RandomSeed");
+	if (!ifs::RandomSeed) window("Could not load RandomFloat");
+
+	bool result = ifs::RandomFloat && ifs::RandomSeed;
+	if (!result)
+		window("Could not load random functions");
+	return result;
+}
 
 bool ifs::load()
 {
@@ -236,7 +254,8 @@ bool ifs::load()
 			!load_input() ||
 			!load_surface(clientloc) ||
 			!load_globals(clientloc) ||
-			!load_steam(steamloc))
+			!load_steam(steamloc) ||
+			!load_randoms(directory))
 		return false;
 
 	return true;

@@ -15,6 +15,7 @@ typedef float vec_t;
 #define MAXSTUDIOBONES		128		// total bones actually used
 #define BONE_USED_BY_HITBOX			0x00000100	// bone (or child) is used by a hit box
 #define RAD2DEG( x  )  ( (float)(x) * (float)(180.f / M_PI) )
+#define DEG2RAD( x  )  ( (float)(x) * (float)(M_PI / 180.f) )
 
 struct Vector
 {
@@ -51,11 +52,8 @@ struct Vector2D
 	Vector2D() : x(0), y(0) {}
 };
 
-struct QAngle
-{
-	QAngle() : x(0), y(0), z(0){}
-	float x, y, z;
-};
+struct QAngle : public Vector
+{};
 
 class VMatrix
 {
@@ -113,6 +111,7 @@ struct matrix3x4_t
 };
 
 Vector AngleVectors(const QAngle& angle);
+void AngleVectors(const QAngle& angles, Vector*, Vector*, Vector*);
 void VectorAngles( const Vector& forward, QAngle &angles );
 void VectorAdd( const Vector& a, const Vector& b, Vector& c );
 void VectorSubtract( const Vector& a, const Vector& b, Vector& c );
@@ -121,6 +120,7 @@ void VectorMultiply(Vector& a, float b);
 void VectorMultiply( const Vector& a, vec_t b, Vector& c );
 void VectorMultiply( const Vector& a, const Vector& b, Vector& c );
 void VectorTransform (const float *in1, const matrix3x4_t& in2, float *out);
+float VectorNormalize(Vector& a);
 vec_t DotProduct(const Vector& a, const Vector& b);
 vec_t DotProduct(const vec_t *v1, const vec_t *v2);
 void MatrixAngles( const matrix3x4_t& matrix, float *angles );

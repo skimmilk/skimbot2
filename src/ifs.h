@@ -69,6 +69,9 @@ public:
 	static ISteamFriends*		steam_friends;
 	static ISteamClient*		steam_client;
 
+	static float (*RandomFloat)(float,float);
+	static void (*RandomSeed)(int);
+
 	static bool load();
 };
 
