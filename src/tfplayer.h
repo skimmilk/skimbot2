@@ -162,6 +162,11 @@ public:
 	bool streaming();
 	// Can this weapon can do damage
 	bool damaging();
+	// Does this weapon fire projectiles?
+	bool projectiles();
+	// Is this weapon a hitscan weapon?
+	// Otherwise this implies it is a projectile weapon if false
+	bool hitscan();
 };
 
 class tfobject : public tfentity

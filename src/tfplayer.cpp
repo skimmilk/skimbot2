@@ -38,6 +38,8 @@ bool tfplayer::is_player()
 #define REGWEPSTREAM(str) weapon_streaming.insert(netvar::class_id_search(#str))
 // Weapon does not do any damage
 #define REGWEPNODMG(str) weapon_nodmg.insert(netvar::class_id_search(#str))
+// Weapon fires projectiles
+#define REGWEPPROJ(str) weapon_projectile.insert(netvar::class_id_search(#str))
 // Register client class type
 #define REGENT(str, type) entity_type[netvar::class_id_search(#str)] = std::make_tuple(type, 0)
 #define REGENT2(str, type, second) entity_type[netvar::class_id_search(#str)] = std::make_tuple(type, (int)second)
@@ -46,6 +48,7 @@ bool tfplayer::is_player()
 std::unordered_map<int, tfslot> weapon_slot;
 std::unordered_set<int> weapon_streaming;
 std::unordered_set<int> weapon_nodmg;
+std::unordered_set<int> weapon_projectile;
 std::unordered_map<int, std::tuple<tftype, int>> entity_type;
 bool initialized;
 
@@ -65,6 +68,7 @@ static void init()
 	REGENT2(CTFProjectile_Throwable, tftype::projectile, tftype_projectile::cleaver);
 	REGENT2(CTFStunBall, tftype::projectile, tftype_projectile::ball);
 	REGENT2(CTFBall_Ornament, tftype::projectile, tftype_projectile::ball);
+	REGENT2(CTFProjectile_EnergyBall, tftype::projectile, tftype_projectile::rocket);
 	REGENT(CTFGrenadePipebombProjectile, tftype::projectile); // sticky&pill
 
 	REGWEP(CTFWearableRobotArm, 3);
@@ -91,12 +95,18 @@ static void init()
 	REGWEP(CTFShotgun, 2);
 	REGWEP(CTFCrossbow, 1);
 	REGWEP(CTFRocketLauncher_Mortar, 1);
+	REGWEPPROJ(CTFRocketLauncher_Mortar);
 	REGWEP(CTFRocketLauncher_AirStrike, 1);
+	REGWEPPROJ(CTFRocketLauncher_AirStrike);
 	REGWEP(CTFRocketLauncher_DirectHit, 1);
+	REGWEPPROJ(CTFRocketLauncher_DirectHit);
 	REGWEP(CTFRocketLauncher, 1);
+	REGWEPPROJ(CTFRocketLauncher);
 	REGWEP(CTFRevolver, 1);
 	REGWEP(CTFDRGPomson, 1);
+	REGWEPPROJ(CTFDRGPomson);
 	REGWEP(CTFRaygun, 2);
+	REGWEPPROJ(CTFRaygun);
 	REGWEP(CTFPistol_ScoutSecondary, 2);
 	REGWEPSTREAM(CTFPistol_ScoutSecondary);
 	REGWEP(CTFPistol_ScoutPrimary, 1); // shortstop
@@ -106,6 +116,7 @@ static void init()
 	REGWEP(CTFPistol, 2);
 	REGWEPSTREAM(CTFPistol);
 	REGWEP(CTFPipebombLauncher, 2);
+	REGWEPPROJ(CTFPipebombLauncher);
 	REGWEP(CTFWeaponPDA_Spy, 4);
 	REGWEPNODMG(CTFWeaponPDA_Spy);
 	REGWEP(CTFWeaponPDA_Engineer_Destroy, 4);
@@ -119,6 +130,7 @@ static void init()
 	REGWEP(CTFWeaponPDA, 4);
 	REGWEPNODMG(CTFWeaponPDA);
 	REGWEP(CTFParticleCannon, 1);
+	REGWEPPROJ(CTFParticleCannon);
 	REGWEP(CTFMinigun, 1);
 	REGWEPSTREAM(CTFMinigun);
 	REGWEP(CTFMedigunShield, 2);
@@ -129,25 +141,35 @@ static void init()
 	REGWEP(CTFLunchBox_Drink, 2);
 	REGWEP(CTFLunchBox, 2);
 	REGWEP(CTFKnife, 3);
-	REGWEP(CTFCleaver, 3);
+	REGWEP(CTFCleaver, 2);
+	REGWEPPROJ(CTFCleaver);
 	REGWEP(CTFJarMilk, 2);
+	REGWEPPROJ(CTFJarMilk);
 	REGWEP(CTFJar, 2);
+	REGWEPPROJ(CTFJar);
 	REGWEP(CTFWeaponInvis, 4);
 	REGWEPNODMG(CTFWeaponInvis);
 	REGWEP(CTFCannon, 1);
+	REGWEPPROJ(CTFCannon);
 	REGWEP(CTFGrenadeLauncher, 1);
+	REGWEPPROJ(CTFGrenadeLauncher);
 	REGWEP(CTFFlareGun_Revenge, 2);
+	REGWEPPROJ(CTFFlareGun_Revenge);
 	REGWEP(CTFFlareGun, 2);
+	REGWEPPROJ(CTFFlareGun);
 	REGWEP(CTFFlameRocket, 1);
+	REGWEPPROJ(CTFFlameRocket);
 	REGWEP(CTFFlameThrower, 1);
+	REGWEPPROJ(CTFFlameThrower);
 	REGWEPSTREAM(CTFFlameThrower);
 	REGWEP(CTFFists, 3);
 	REGWEP(CTFFireAxe, 3);
 	REGWEP(CTFCompoundBow, 1);
+	REGWEPPROJ(CTFCompoundBow);
 	REGWEP(CTFClub, 3);
 	REGWEP(CTFBuffItem, 2);
 	REGWEPNODMG(CTFBuffItem);
-	REGWEP(CTFStickBomb, 2);
+	REGWEP(CTFStickBomb, 3);
 	REGWEP(CTFBottle, 3);
 	REGWEP(CTFBonesaw, 3);
 	REGWEP(CTFBat_Giftwrap, 3);
@@ -156,6 +178,7 @@ static void init()
 	REGWEP(CTFBat, 3);
 	REGWEP(CTFWeaponBuilder, 4);
 	REGWEPNODMG(CTFWeaponBuilder);
+	REGWEP(CTFLaserPointer, 2);
 }
 tfslot tfweapon::slot()
 {
@@ -184,6 +207,13 @@ bool tfweapon::damaging()
 		init();
 
 	return !weapon_nodmg.count(this->GetClientClass()->m_ClassID);
+}
+bool tfweapon::projectiles()
+{
+	if (!initialized)
+		init();
+
+	return weapon_projectile.count(this->GetClientClass()->m_ClassID);
 }
 
 tftype tfentity::type()
@@ -217,6 +247,7 @@ tftype_projectile tfprojectile::projectile_type()
 	{
 		// Get model of entity
 		studiohdr_t* studio = ifs::model_info->GetStudiomodel(GetModel());
+		// Check if the model hash is the normal or other sticky
 		if (studio->checksum == 959466927 ||
 				studio->checksum == -374341724)
 			return tftype_projectile::sticky;
@@ -254,7 +285,7 @@ const char* tfentity::type_name()
 		case tfclass::spy:
 			return "Spy";
 		default:
-			return "Unknown";
+			break;
 		}
 	else if (t == tftype::object)
 		switch (((tfobject*)this)->object_type())
@@ -272,7 +303,7 @@ const char* tfentity::type_name()
 		case tftype_object::teleporter:
 			return "Teleporter";
 		default:
-			return "Unknown";
+			break;
 		}
 	else if (t == tftype::projectile)
 		switch (((tfprojectile*)this)->projectile_type())
@@ -294,9 +325,9 @@ const char* tfentity::type_name()
 		case tftype_projectile::sticky:
 			return "Sticky";
 		default:
-			return "Unknown";
+			break;
 		}
-	return "Unknown";
+	return this->GetClientClass()->m_pNetworkName;
 }
 bool tfentity::damageable()
 {
