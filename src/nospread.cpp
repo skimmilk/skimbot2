@@ -40,7 +40,7 @@ void spread_frame(CUserCmd* cmd)
 {
 	tfweapon* wep = tfplayer::me()->weapon();
 	if (!(cmd->buttons & IN_ATTACK) || !spread_enable->m_nValue ||
-			!wep || wep->slot() == tfslot::melee)
+			!wep || wep->slot() == tfslot::melee || !wep->damaging() || wep->shotgun())
 		return;
 
 	ifs::RandomSeed(cmd->random_seed & 0xff);
