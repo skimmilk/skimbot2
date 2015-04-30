@@ -32,6 +32,7 @@ enum class tfslot : int { primary = 1, secondary, melee, menu };
 #define COND_CLOAKED 16
 #define COND_UBER 32
 #define COND_TAUNT 128
+#define COND_BONK 16384
 #define COND_FIRE 4194304
 #define COND_OVERHEALED 8388608
 
