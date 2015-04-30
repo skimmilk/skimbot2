@@ -35,6 +35,7 @@ ConVar* draw_projs; // Draw projectiles
 ConVar* unmask; // Remove spies' disguises
 ConVar* uncloak; // Remove spies' cloaks
 ConVar* glow; // Enable the glow effect on entities
+ConVar* everything; // Draw ESP on all entities, for debugging
 
 int highlighted_ent; // One of the entities that is being aimed at by the user
 
@@ -164,19 +165,19 @@ static void draw(tfentity* pl, const color& c, float distance)
 }
 static bool can_draw(tfentity* ent, float distance)
 {
-	if (ent->type() == tftype::object && !draw_objs->m_nValue)
+	auto type = ent->type();
+	if (type == tftype::object && !draw_objs->m_nValue)
 		return false;
-	if (ent->type() == tftype::projectile && !draw_projs->m_nValue)
+	if (type == tftype::projectile && !draw_projs->m_nValue)
 		return false;
-	if (ent->type() == tftype::other)
+	if (type == tftype::other && !everything->m_nValue)
 		return false;
 
-	if (ent->type() == tftype::player)
+	if (type == tftype::player)
 		if (!((tfplayer*)ent)->is_drawable())
 			return false;
 
 	return	!ent->IsDormant() &&
-			ent->type() != tftype::other &&
 			(friendlies->m_nValue || ((tfplayer*)ent)->m_iTeamNum() != tfplayer::me()->m_iTeamNum()) &&
 			distance < maxdist->m_fValue;
 }
@@ -340,6 +341,7 @@ static void unload()
 	delete unmask;
 	delete uncloak;
 	delete glow;
+	delete everything; // oh no
 }
 void esp::init()
 {
@@ -355,6 +357,7 @@ void esp::init()
 	unmask =	new ConVar(PREFIX "esp_unmask", "0", 0, "Remove spies' disguises");
 	uncloak =	new ConVar(PREFIX "esp_uncloak", "0", 0, "Remove spies' cloaks");
 	glow =		new ConVar(PREFIX "esp_glow", "1", 0, "Use the glow effect with ESP");
+	everything= new ConVar(PREFIX "esp_everything", "0");
 
 	basehook::post_paint(paint, "esp");
 	basehook::post_move(frame, "esp");
