@@ -93,7 +93,7 @@ static void get_aim_pos(tfentity* them, tftype type, tfplayer* me, Vector& resul
 	else if (type == tftype::object)
 	{
 		result = them->GetAbsOrigin();
-		result.y += 16;
+		result.z += 16;
 	}
 	else
 		result = them->GetAbsOrigin();
