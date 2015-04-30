@@ -158,8 +158,10 @@ static void init()
 	REGWEPPROJ(CTFCleaver);
 	REGWEP(CTFJarMilk, 2);
 	REGWEPPROJ(CTFJarMilk);
+	REGWEPNODMG(CTFJarMilk);
 	REGWEP(CTFJar, 2);
 	REGWEPPROJ(CTFJar);
+	REGWEPNODMG(CTFJar);
 	REGWEP(CTFWeaponInvis, 4);
 	REGWEPNODMG(CTFWeaponInvis);
 	REGWEP(CTFCannon, 1);

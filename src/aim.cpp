@@ -15,6 +15,7 @@
 #include "basehook.h"
 #include "tfplayer.h"
 #include "draw.h"
+#include "esp.h"
 #include "trace.h"
 #include "trig.h"
 #include "skeltal.h"
@@ -31,7 +32,7 @@ ConVar* aim_shotgun_falloff;
 ConVar* aim_silent;
 
 Vector aim_point;
-bool aiming;
+int aim_index;
 
 // To decide who to shoot, pick most prioritized entity
 struct tfrank {
@@ -105,22 +106,19 @@ static bool valid_distance(float dist, tfplayer* me, tfslot slot)
 		return false;
 
 	// Determine if we have a shotgun
-	auto cl = me->m_iClass();
-	if ((slot == tfslot::primary &&
-					(cl == tfclass::scout || cl == tfclass::engineer)) ||
-			(slot == tfslot::secondary &&
-					(cl == tfclass::soldier || cl == tfclass::pyro || cl == tfclass::heavy)))
+	if (me->weapon()->shotgun())
 		return dist < aim_shotgun_falloff->m_fValue;
+
 	// Determine if we have flamethrower
-	if (cl == tfclass::pyro && slot == tfslot::primary)
+	if (me->m_iClass() == tfclass::pyro && slot == tfslot::primary)
 		return dist < 400.f;
 	return true;
 }
 // Checks if this is a valid entity for the weapon we're using
-static bool valid_ent(tfentity* ent, tftype type, tfplayer* me, tfslot slot)
+static bool valid_ent(tfentity* ent, tftype type, tfplayer* me)
 {
 	// Sanity checks
-	if (type == tftype::other || ent->IsDormant())
+	if (type == tftype::other || ent->IsDormant() || !ent->damageable())
 		return false;
 	if (type == tftype::player &&
 			!((tfplayer*)ent)->is_alive())
@@ -128,11 +126,10 @@ static bool valid_ent(tfentity* ent, tftype type, tfplayer* me, tfslot slot)
 	if (((tfplayer*)ent)->m_iTeamNum() == me->m_iTeamNum())
 		return false;
 
-	// Could we damage it?
-	auto cl = me->m_iClass();
-	return !(type == tftype::projectile &&
-			(slot == tfslot::melee || cl == tfclass::demoman ||
-					(slot == tfslot::primary && (cl == tfclass::pyro || cl == tfclass::soldier))));
+	// Can only damage projectiles with non-projectiles
+	if (type == tftype::projectile)
+		return !me->weapon()->projectiles();
+	return true;
 }
 static void populate_ranks(std::vector<tfrank>& ranks)
 {
@@ -147,7 +144,7 @@ static void populate_ranks(std::vector<tfrank>& ranks)
 			continue;
 		auto type = ent->type();
 
-		if (!valid_ent(ent, type, me, slot))
+		if (!valid_ent(ent, type, me))
 			continue;
 
 		float distance = sqrtf((eyes - ent->GetAbsOrigin()).LengthSqr());
@@ -167,7 +164,7 @@ static void populate_ranks(std::vector<tfrank>& ranks)
 }
 static void aim_frame(CUserCmd* cmd)
 {
-	aiming = false;
+	aim_index = 0;
 	if (!aim_enabled->m_nValue || !tfplayer::me()->weapon() ||
 			!tfplayer::me()->weapon()->damaging())
 		return;
@@ -182,23 +179,24 @@ static void aim_frame(CUserCmd* cmd)
 	if (ranks.size() == 0)
 		return;
 
-	Vector& at = std::min_element(ranks.begin(), ranks.end())->aimpoint;
+	auto at = std::min_element(ranks.begin(), ranks.end());
 
-	trig::aim(cmd, tfplayer::me()->local_eyes(), at, aim_silent->m_nValue);
+	trig::aim(cmd, tfplayer::me()->local_eyes(), at->aimpoint, aim_silent->m_nValue);
 	if (!aim_silent->m_nValue)
 		ifs::engine->SetViewAngles(cmd->viewangles);
 	cmd->buttons |= IN_ATTACK;
 
-	aiming = true;
-	aim_point = at;
+	aim_index = at->ent->entindex();
+	esp::highlight(aim_index);
+	aim_point = at->aimpoint;
 }
 static void aim_paint()
 {
-	if (!aiming || !aim_esp->m_nValue || !aim_silent->m_nValue)
+	if (!aim_index || !aim_esp->m_nValue || !aim_silent->m_nValue)
 		return;
 
 	point mid;
-	color c {255,0,0,32};
+	color c {255,0,0,64};
 	int w, h;
 	ifs::engine->GetScreenSize(w, h);
 
@@ -229,7 +227,7 @@ static void aim_unload()
 	delete aim_esp;
 	delete aim_shotgun_falloff;
 	delete aim_silent;
-	aiming = false;
+	aim_index = 0;
 }
 void aim::init()
 {
