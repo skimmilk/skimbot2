@@ -40,6 +40,8 @@ bool tfplayer::is_player()
 #define REGWEPNODMG(str) weapon_nodmg.insert(netvar::class_id_search(#str))
 // Weapon fires projectiles
 #define REGWEPPROJ(str) weapon_projectile.insert(netvar::class_id_search(#str))
+// Weapon is a shotgun
+#define REGWEPSHOTGUN(str) weapon_shotgun.insert(netvar::class_id_search(#str))
 // Register client class type
 #define REGENT(str, type) entity_type[netvar::class_id_search(#str)] = std::make_tuple(type, 0)
 #define REGENT2(str, type, second) entity_type[netvar::class_id_search(#str)] = std::make_tuple(type, (int)second)
@@ -49,6 +51,7 @@ std::unordered_map<int, tfslot> weapon_slot;
 std::unordered_set<int> weapon_streaming;
 std::unordered_set<int> weapon_nodmg;
 std::unordered_set<int> weapon_projectile;
+std::unordered_set<int> weapon_shotgun;
 std::unordered_map<int, std::tuple<tftype, int>> entity_type;
 bool initialized;
 
@@ -85,15 +88,25 @@ static void init()
 	REGWEPSTREAM(CTFSMG);
 	REGWEP(CTFShovel, 3);
 	REGWEP(CTFShotgunBuildingRescue, 1);
+	REGWEPPROJ(CTFShotgunBuildingRescue);
 	REGWEP(CTFPEPBrawlerBlaster, 1);
+	REGWEPSHOTGUN(CTFPEPBrawlerBlaster);
 	REGWEP(CTFSodaPopper, 1);
+	REGWEPSHOTGUN(CTFSodaPopper);
 	REGWEP(CTFShotgun_Revenge, 1);
+	REGWEPSHOTGUN(CTFShotgun_Revenge);
 	REGWEP(CTFScatterGun, 1);
+	REGWEPSHOTGUN(CTFScatterGun);
 	REGWEP(CTFShotgun_Pyro, 2);
+	REGWEPSHOTGUN(CTFShotgun_Pyro);
 	REGWEP(CTFShotgun_HWG, 2);
+	REGWEPSHOTGUN(CTFShotgun_HWG);
 	REGWEP(CTFShotgun_Soldier, 2);
+	REGWEPSHOTGUN(CTFShotgun_Soldier);
 	REGWEP(CTFShotgun, 2);
+	REGWEPSHOTGUN(CTFShotgun);
 	REGWEP(CTFCrossbow, 1);
+	REGWEPPROJ(CTFCrossbow);
 	REGWEP(CTFRocketLauncher_Mortar, 1);
 	REGWEPPROJ(CTFRocketLauncher_Mortar);
 	REGWEP(CTFRocketLauncher_AirStrike, 1);
@@ -110,7 +123,7 @@ static void init()
 	REGWEP(CTFPistol_ScoutSecondary, 2);
 	REGWEPSTREAM(CTFPistol_ScoutSecondary);
 	REGWEP(CTFPistol_ScoutPrimary, 1); // shortstop
-	REGWEPSTREAM(CTFPistol_ScoutPrimary);
+	REGWEPSHOTGUN(CTFPistol_ScoutPrimary);
 	REGWEP(CTFPistol_Scout, 2);
 	REGWEPSTREAM(CTFPistol_Scout);
 	REGWEP(CTFPistol, 2);
@@ -214,6 +227,13 @@ bool tfweapon::projectiles()
 		init();
 
 	return weapon_projectile.count(this->GetClientClass()->m_ClassID);
+}
+bool tfweapon::shotgun()
+{
+	if (!initialized)
+		init();
+
+	return weapon_shotgun.count(GetClientClass()->m_ClassID);
 }
 
 tftype tfentity::type()
@@ -333,7 +353,7 @@ bool tfentity::damageable()
 {
 	auto t = type();
 	if (t == tftype::player)
-		return !(((tfplayer*)this)->m_nPlayerCond() & COND_UBER);
+		return !(((tfplayer*)this)->m_nPlayerCond() & (COND_UBER | COND_BONK));
 	else if (t == tftype::projectile)
 		// TODO: Check if the sticky is on the ground & arrow is flying
 		return ((tfprojectile*)this)->projectile_type() == tftype_projectile::sticky;
