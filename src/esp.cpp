@@ -89,10 +89,13 @@ static bool simple_esp(tfentity* them, float width, float height, const color& c
 			!draw::world_point(vbr, pbr))
 		return false;
 
-	draw::line(ptl, ptr, c);
-	draw::line(ptr, pbr, c);
-	draw::line(pbl, pbr, c);
-	draw::line(ptl, pbl, c);
+	if (box->m_nValue)
+	{
+		draw::line(ptl, ptr, c);
+		draw::line(ptr, pbr, c);
+		draw::line(pbl, pbr, c);
+		draw::line(ptl, pbl, c);
+	}
 
 	bottom_left = pbl;
 
