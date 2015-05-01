@@ -28,7 +28,8 @@ SOURCES=src/main.cpp\
 	src/steam.cpp\
 	src/achievement.cpp\
 	src/aim.cpp\
-	src/nospread.cpp
+	src/nospread.cpp\
+	src/tfcache.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 HACK=libskimbot.so
 

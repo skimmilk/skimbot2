@@ -21,6 +21,7 @@
 #include "esp.h"
 #include "aim.h"
 #include "nospread.h"
+#include "tfcache.h"
 #include "achievement.h"
 #include "sdk/engine.h"
 
@@ -38,6 +39,7 @@ extern "C" void libmain()
 	skim::cvar_hook::init();
 	skim::achievement::init();
 	skim::basehook::init();
+	skim::tfcache::init();
 
 	skim::draw::init();
 	skim::esp::init();

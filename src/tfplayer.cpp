@@ -12,6 +12,7 @@
 #include "ifs.h"
 #include "const.h"
 #include "sourceutil.h"
+#include "tfcache.h"
 #include "sdk/engine.h"
 #include "sdk/vars.h"
 #include "sdk/model.h"
@@ -356,9 +357,10 @@ bool tfentity::damageable()
 	auto t = type();
 	if (t == tftype::player)
 		return !(((tfplayer*)this)->m_nPlayerCond() & (COND_UBER | COND_BONK));
-	else if (t == tftype::projectile)
-		// TODO: Check if the sticky is on the ground & arrow is flying
-		return ((tfprojectile*)this)->projectile_type() == tftype_projectile::sticky;
+	// Stickybombs are damageable, but only when touching the ground
+	else if (t == tftype::projectile &&
+		((tfprojectile*)this)->projectile_type() == tftype_projectile::sticky)
+		return !tfcache::is_moving(entindex());
 	else if (t == tftype::object)
 		switch (((tfobject*)this)->object_type())
 		{
