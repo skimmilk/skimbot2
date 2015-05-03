@@ -1,6 +1,8 @@
 CXX=g++
 CC=gcc
-CFLAGS=-c -Wall -Wextra -g -fpic -m32 -O0 -std=c++11 -I src/ -Wfatal-errors -DPOSIX
+# Get time in nanoseconds, good enough randomness
+RANDOM=$(shell date +%N)
+CFLAGS=-c -Wall -Wextra -g -fpic -m32 -O0 -std=c++11 -I src/ -Wfatal-errors -DPOSIX -DRANDOM=$(RANDOM)
 LDFLAGS=-m32 -shared -ldl -lm
 SOURCES=src/main.cpp\
 	src/sourceutil.cpp\
