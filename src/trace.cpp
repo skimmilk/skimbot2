@@ -42,7 +42,7 @@ public:
 	int ignore;
 };
 
-IClientEntity* trace::ray(const Vector& start, const QAngle& aim, int ignore)
+static IClientEntity* ray(const Vector& start, const QAngle& aim, int ignore)
 {
 	Vector direction = AngleVectors(aim);
 
@@ -70,15 +70,15 @@ tfentity* trace::sight(const Vector& start, const QAngle& viewangle, int idignor
 	return aim;
 }
 
-bool trace::can_see_fast(const Vector& start, tfentity* pl)
+bool trace::vischeck_fast(const Vector& start, tfentity* pl)
 {
 	Vector middle = pl->GetAbsOrigin();
 	middle.y += 32;
 
-	return can_see_fast(start, middle, pl);
+	return vischeck_fast(start, middle, pl);
 }
 
-bool trace::can_see_fast(const Vector& start, const Vector& end, tfentity* filter)
+bool trace::vischeck_fast(const Vector& start, const Vector& end, tfentity* filter)
 {
 	Vector difference = end - start;
 	QAngle aim;

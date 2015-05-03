@@ -158,7 +158,7 @@ static void populate_ranks(std::vector<tfrank>& ranks)
 		// Determine if line-of-sight established
 		Vector aimpos;
 		get_aim_pos(ent, type, me, aimpos);
-		if (trace::can_see_fast(eyes, aimpos, ent))
+		if (trace::vischeck_fast(eyes, aimpos, ent))
 			ranks.push_back({distance * mult, ent, aimpos});
 	}
 }

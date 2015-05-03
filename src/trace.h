@@ -21,13 +21,11 @@ class tfentity;
 class trace
 {
 public:
-	// Returns what the ray hits (ray has MASK_SHOT)
-	static IClientEntity* ray(const Vector& start, const QAngle& aim, int ignore);
 	// Returns the the player in the line of sight
 	static tfentity* sight(const Vector& start, const QAngle& viewangle, int idignore);
-	// Determines if player can see player, quick
-	static bool can_see_fast(const Vector& start, tfentity* pl);
-	static bool can_see_fast(const Vector& start, const Vector& end, tfentity* filter);
+	// Determines if player can see object, using only one traceray
+	static bool vischeck_fast(const Vector& start, tfentity* pl);
+	static bool vischeck_fast(const Vector& start, const Vector& end, tfentity* filter);
 };
 
 } /* namespace skim */
