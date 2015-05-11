@@ -51,7 +51,7 @@ static float base_multiplier(tfentity* ent, tftype type, float distance)
 {
 	switch (type)
 	{
-	case tftype::player: return 1;
+	case tftype::player: break;
 	case tftype::projectile:
 		if (((tfprojectile*)ent)->projectile_type() == tftype_projectile::sticky)
 		{
@@ -72,10 +72,13 @@ static float base_multiplier(tfentity* ent, tftype type, float distance)
 		case tftype_object::dispenser: case tftype_object::teleporter:
 			return 100;
 		case tftype_object::sentry:
-			return 1;
+			break;
 		}
 		default: return -1;
 	}
+
+	// Prioritize objects with lower health up to 3x
+	return ((tfplayer*)ent)->m_iHealth() / (150.f*3.f/2.f) + 1.f/3.f;
 }
 static void get_aim_pos(tfentity* them, tftype type, tfplayer* me, Vector& result)
 {
