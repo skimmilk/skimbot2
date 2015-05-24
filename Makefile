@@ -38,7 +38,7 @@ HACK=libskimbot.so
 all: $(HACK)
 
 $(HACK): $(OBJECTS)
-	$(CXX) $(LDFLAGS) $(OBJECTS) -o $@
+	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS) 
 
 .cpp.o:
 	$(CXX) $(CFLAGS) $< -o $@
