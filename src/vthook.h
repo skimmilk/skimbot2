@@ -67,6 +67,65 @@ public:
 	}
 };
 
+// Multihook supports hooking multiple methods, but with some more effort
+// First template argument is the number of hooks we are going to hook in the class
+// Second template argument are the maximum number of virtual functions in the class
+template <int num_hooks, int num_virtfns>
+class multihook
+{
+private:
+	long* origvmt;
+	void* obj;
+	long newvmt[num_virtfns];
+
+	struct hookinfo { long fnptr; int position; };
+	hookinfo hookfns[num_hooks];
+
+public:
+	~multihook()
+	{
+		unhook_all();
+	}
+
+	template <typename T>
+	inline void init(T* o)
+	{
+		// Save the original values
+		obj = (void*)o;
+		origvmt = *((long**)o);
+
+		// Copy the vmt
+		for (int i = 0; i < num_virtfns; i++)
+			newvmt[i] = origvmt[i];
+
+		// Set the object's vmt to the newvmt
+		long** vmtptr = (long**)obj;
+		*vmtptr = newvmt;
+	}
+
+	inline void unhook_all()
+	{
+		// Restore vmt pointer to original
+		long** vmtptr = (long**)obj;
+		*vmtptr = origvmt;
+	}
+
+	template <typename Ret, typename... Args>
+	inline void init_hook(int index, Ret (*fn)(Args...), int vmtpos)
+	{
+		hookfns[index] = {(long)fn, vmtpos};
+	}
+	inline void hook(int index)
+	{
+		newvmt[hookfns[index].position] = hookfns[index].fnptr;
+	}
+	inline void unhook(int index)
+	{
+		int pos = hookfns[index].position;
+		newvmt[pos] = origvmt[pos];
+	}
+};
+
 } /* namespace skim */
 
 #endif /* VTHOOK_H_ */
