@@ -21,12 +21,12 @@
 namespace skim
 {
 
-ConVar* henable;
-ConVar* strafe;
-ConVar* samt;
+static ConVar* enabled;
+static ConVar* strafe;
+static ConVar* amount;
 
 // Last position
-Vector last;
+static Vector last;
 
 static void frame(CUserCmd* cmd)
 {
@@ -40,7 +40,7 @@ static void frame(CUserCmd* cmd)
 	else if (first && jumping)
 		first = false;
 	// If we are not on the ground, disable the jump button
-	else if (jumping && henable->m_nValue)
+	else if (jumping && enabled->m_nValue)
 		cmd->buttons &= grounded? ~IN_DUCK : ~IN_JUMP;
 
 	// Auto-strafe
@@ -54,7 +54,7 @@ static void frame(CUserCmd* cmd)
 
 		if (speed > 1.)
 		{
-			float diffangle = samt->m_fValue / speed;
+			float diffangle = amount->m_fValue / speed;
 			if (cmd->sidemove > 0.f)
 				diffangle *= -1.f;
 
@@ -67,15 +67,15 @@ static void frame(CUserCmd* cmd)
 
 static void unload()
 {
-	delete henable;
+	delete enabled;
 	delete strafe;
-	delete samt;
+	delete amount;
 }
 void bhop::init()
 {
-	henable = new ConVar(PREFIX "bhop", "0", 0, "Enable bunny hopping");
+	enabled = new ConVar(PREFIX "bhop", "0", 0, "Enable bunny hopping");
 	strafe = new ConVar(PREFIX "strafe", "0", 0, "Enable auto air strafing");
-	samt = new ConVar(PREFIX "strafe_amount", "10", 0, "Autostrafe amount");
+	amount = new ConVar(PREFIX "strafe_amount", "10", 0, "Autostrafe amount");
 	basehook::post_move(frame, "bhop");
 	exit::handle(unload);
 }

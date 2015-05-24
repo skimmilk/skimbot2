@@ -48,13 +48,13 @@ bool tfplayer::is_player()
 #define REGENT2(str, type, second) entity_type[netvar::class_id_search(#str)] = std::make_tuple(type, (int)second)
 
 // First parameter is class ID, second slot
-std::unordered_map<int, tfslot> weapon_slot;
-std::unordered_set<int> weapon_streaming;
-std::unordered_set<int> weapon_nodmg;
-std::unordered_set<int> weapon_projectile;
-std::unordered_set<int> weapon_shotgun;
-std::unordered_map<int, std::tuple<tftype, int>> entity_type;
-bool initialized;
+static std::unordered_map<int, tfslot> weapon_slot;
+static std::unordered_set<int> weapon_streaming;
+static std::unordered_set<int> weapon_nodmg;
+static std::unordered_set<int> weapon_projectile;
+static std::unordered_set<int> weapon_shotgun;
+static std::unordered_map<int, std::tuple<tftype, int>> entity_type;
+static bool initialized;
 
 static void init()
 {

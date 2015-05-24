@@ -18,7 +18,7 @@ namespace skim
 {
 
 // Recursively search a table for its elements
-RecvProp* netsearch(RecvTable* table, const char* offname)
+static RecvProp* netsearch(RecvTable* table, const char* offname)
 {
 	for (int i = 0; i < table->m_nProps; i++)
 	{

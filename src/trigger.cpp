@@ -22,13 +22,13 @@
 namespace skim
 {
 
-ConVar* enabled;
-ConVar* hit_objs;
-ConVar* reflect;
-ConVar* reflect_dist;
-ConVar* reflect_fov;
-ConCommand* contfdebug;
-bool do_debug;
+static ConVar* enabled;
+static ConVar* hit_objs;
+static ConVar* reflect;
+static ConVar* reflect_dist;
+static ConVar* reflect_fov;
+static ConCommand* contfdebug;
+static bool do_debug;
 
 // Returns the enemy we're looking at
 static tfentity* enemy(CUserCmd* cmd)

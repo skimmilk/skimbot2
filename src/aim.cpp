@@ -26,13 +26,13 @@
 namespace skim
 {
 
-ConVar* aim_enabled;
-ConVar* aim_esp;
-ConVar* aim_shotgun_falloff;
-ConVar* aim_silent;
+static ConVar* aim_enabled;
+static ConVar* aim_esp;
+static ConVar* aim_shotgun_falloff;
+static ConVar* aim_silent;
 
-Vector aim_point;
-int aim_index;
+static Vector aim_point;
+static int aim_index;
 
 // To decide who to shoot, pick most prioritized entity
 struct tfrank {

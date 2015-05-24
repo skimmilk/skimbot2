@@ -14,7 +14,7 @@
 namespace skim
 {
 
-HFont font;
+static HFont font;
 
 void draw::init()
 {

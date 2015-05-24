@@ -17,10 +17,10 @@
 namespace skim
 {
 
-ConVar* spin_enabled;
-ConVar* spin_amount;
-ConVar* spin_rand;
-ConVar* spin_aa;
+static ConVar* spin_enabled;
+static ConVar* spin_amount;
+static ConVar* spin_rand;
+static ConVar* spin_aa;
 
 static void frame(CUserCmd* cmd)
 {

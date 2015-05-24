@@ -25,11 +25,6 @@
 #include "achievement.h"
 #include "sdk/engine.h"
 
-ConCommand* dumpall;
-ConCommand* dumpname;
-ConCommand* dumpclass;
-ConCommand* tfinfo;
-
 extern "C" void libmain()
 {
 	if (!skim::ifs::load())
@@ -49,6 +44,11 @@ extern "C" void libmain()
 	skim::bhop::init();
 	skim::spin::init();
 	skim::nospread::init();
+
+	static ConCommand* dumpall;
+	static ConCommand* dumpname;
+	static ConCommand* dumpclass;
+	static ConCommand* tfinfo;
 
 	// Test netvars
 	dumpall = new ConCommand("dumpall", skim::netvar::dumpnets);

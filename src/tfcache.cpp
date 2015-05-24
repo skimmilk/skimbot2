@@ -24,8 +24,8 @@ struct networked_position
 	bool valid;
 };
 
-networked_position* pos_prev;
-networked_position* pos_current;
+static networked_position* pos_prev;
+static networked_position* pos_current;
 
 bool tfcache::is_moving(int entnum)
 {

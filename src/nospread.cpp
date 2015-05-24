@@ -21,25 +21,25 @@
 namespace skim
 {
 
-ConVar* spread_enable;
+static ConVar* enabled;
 
-float get_spread(tfweapon* wep)
+static float get_spread(tfweapon* wep)
 {
 	// Call the virtual GetWeaponSpread method
 	typedef float (*get_spread_fn)(tfweapon*);
 	get_spread_fn* vmt = *(get_spread_fn**)wep;
 	return vmt[518](wep);
 }
-float normal_angle(float a)
+static float normal_angle(float a)
 {
 	while (a <= -180.f) a += 360;
 	while (a > 180.f) a -= 360;
 	return a;
 }
-void spread_frame(CUserCmd* cmd)
+static void spread_frame(CUserCmd* cmd)
 {
 	tfweapon* wep = tfplayer::me()->weapon();
-	if (!(cmd->buttons & IN_ATTACK) || !spread_enable->m_nValue ||
+	if (!(cmd->buttons & IN_ATTACK) || !enabled->m_nValue ||
 			!wep || wep->slot() == tfslot::melee || !wep->damaging() || wep->shotgun())
 		return;
 
@@ -66,13 +66,13 @@ void spread_frame(CUserCmd* cmd)
 	cmd->viewangles = result;
 }
 
-void spread_exit()
+static void spread_exit()
 {
-	delete spread_enable;
+	delete enabled;
 }
 void nospread::init()
 {
-	spread_enable = new ConVar(PREFIX "nospread_auto", "0", 0, "Enable nospread");
+	enabled = new ConVar(PREFIX "nospread_auto", "0", 0, "Enable nospread");
 
 	basehook::post_move(spread_frame, "nospread");
 	exit::handle(spread_exit);

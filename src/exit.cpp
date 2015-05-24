@@ -15,7 +15,8 @@
 namespace skim
 {
 
-ConCommand* exitcmd;
+static ConCommand* exitcmd;
+static std::vector<exit::atexit_fn> handlers;
 
 void exit::init()
 {
@@ -23,7 +24,6 @@ void exit::init()
 	exit::handle([](){delete exitcmd;});
 }
 
-std::vector<exit::atexit_fn> handlers;
 void exit::unload()
 {
 	for (const auto& a : handlers)

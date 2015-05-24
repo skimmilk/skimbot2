@@ -23,15 +23,15 @@
 namespace skim
 {
 
-ConCommand* c_unlock;
-ConCommand* c_list;
-ConCommand* c_relock;
+static ConCommand* unlock;
+static ConCommand* list;
+static ConCommand* relock;
 
 // TODO: Get the maximum number of achievements runtime
 #define NUMACHIEVE 500
 
 // Unlock a random achievement
-void ach_unlock()
+static void ach_unlock()
 {
 	auto ach = ifs::engine->GetAchievementMgr();
 	int max = ach->GetAchievementCount();
@@ -53,7 +53,7 @@ void ach_unlock()
 	ach->AwardAchievement(
 			anchovies[rand() % anchovies.size()]->GetAchievementID());
 }
-void ach_list()
+static void ach_list()
 {
 	for (int i = 0; i < NUMACHIEVE; i++)
 	{
@@ -64,7 +64,7 @@ void ach_list()
 		con(achname);
 	}
 }
-void ach_relock()
+static void ach_relock()
 {
 	for (int i = 0; i < NUMACHIEVE; i++)
 	{
@@ -79,17 +79,17 @@ void ach_relock()
 	ifs::engine->GetAchievementMgr()->DownloadUserData();
 }
 
-void ach_done()
+static void ach_done()
 {
-	delete c_unlock;
-	delete c_list;
-	delete c_relock;
+	delete unlock;
+	delete list;
+	delete relock;
 }
 void achievement::init()
 {
-	c_unlock = new ConCommand(PREFIX "ach_unlock", ach_unlock, "Unlock a random achievement");
-	c_list = new ConCommand(PREFIX "ach_list", ach_list, "List achievement names");
-	c_relock = new ConCommand(PREFIX "ach_relock", ach_relock, "Lock achievements");
+	unlock = new ConCommand(PREFIX "ach_unlock", ach_unlock, "Unlock a random achievement");
+	list = new ConCommand(PREFIX "ach_list", ach_list, "List achievement names");
+	relock = new ConCommand(PREFIX "ach_relock", ach_relock, "Lock achievements");
 
 	srand(time(0));
 

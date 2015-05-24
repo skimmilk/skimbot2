@@ -23,26 +23,26 @@
 namespace skim
 {
 
-ConVar* esp_enabled;
-ConVar* box;
-ConVar* maxdist;
-ConVar* friendlies; // Draw friendlies
-ConVar* sightdist; // Length of the line-of-sight bar
-ConVar* falloff; // If players are further away than this, don't draw detailed stuff
-ConVar* cursor; // Draw cursor to closest player
-ConVar* draw_objs; // Draw objects (sentries, dispencers, teleporters)
-ConVar* draw_projs; // Draw projectiles
-ConVar* unmask; // Remove spies' disguises
-ConVar* uncloak; // Remove spies' cloaks
-ConVar* glow; // Enable the glow effect on entities
-ConVar* everything; // Draw ESP on all entities, for debugging
+static ConVar* enabled;
+static ConVar* box;
+static ConVar* maxdist;
+static ConVar* friendlies; // Draw friendlies
+static ConVar* sightdist; // Length of the line-of-sight bar
+static ConVar* falloff; // If players are further away than this, don't draw detailed stuff
+static ConVar* cursor; // Draw cursor to closest player
+static ConVar* draw_objs; // Draw objects (sentries, dispencers, teleporters)
+static ConVar* draw_projs; // Draw projectiles
+static ConVar* unmask; // Remove spies' disguises
+static ConVar* uncloak; // Remove spies' cloaks
+static ConVar* glow; // Enable the glow effect on entities
+static ConVar* everything; // Draw ESP on all entities, for debugging
 
-int highlighted_ent; // One of the entities that is being aimed at by the user
+static int highlighted_ent; // One of the entities that is being aimed at by the user
 
 // Entities and the colors they need to be drawn with
-std::map<int, color> highlights, hlstage;
+static std::map<int, color> highlights, hlstage;
 
-const color& get_highlight(int index, const color& def)
+static const color& get_highlight(int index, const color& def)
 {
 	auto it = highlights.find(index);
 	if (it == highlights.end())
@@ -185,7 +185,7 @@ static bool can_draw(tfentity* ent, float distance)
 			distance < maxdist->m_fValue;
 }
 // Returns the enemy team color
-color teamcolor(int teamnum)
+static color teamcolor(int teamnum)
 {
 	if (teamnum == 3)
 		return {255, 0, 0, 255};
@@ -194,7 +194,7 @@ color teamcolor(int teamnum)
 // Runs on PaintTraverse
 static void paint()
 {
-	if (!esp_enabled->m_nValue)
+	if (!enabled->m_nValue)
 		return;
 
 	highlighted_ent = 0;
@@ -312,7 +312,7 @@ static void cmesp()
 // Runs after CreateMove
 static void frame(CUserCmd*)
 {
-	if (!esp_enabled->m_nValue)
+	if (!enabled->m_nValue)
 		return;
 	if (glow->m_nValue || unmask->m_nValue || uncloak->m_nValue)
 		cmesp();
@@ -332,7 +332,7 @@ void esp::highlight(int index, const color& c)
 
 static void unload()
 {
-	delete esp_enabled;
+	delete enabled;
 	delete box;
 	delete maxdist;
 	delete friendlies;
@@ -348,7 +348,7 @@ static void unload()
 }
 void esp::init()
 {
-	esp_enabled=new ConVar(PREFIX "esp", "0");
+	enabled =	new ConVar(PREFIX "esp", "0");
 	box =		new ConVar(PREFIX "esp_box", "1");
 	maxdist =	new ConVar(PREFIX "esp_maxdist", "4000");
 	friendlies=	new ConVar(PREFIX "esp_friendlies", "0");
