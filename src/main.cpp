@@ -69,6 +69,4 @@ extern "C" void libmain()
 	skim::con(NAME "Loaded");
 	skim::con(NAME "Build " __TIMESTAMP__);
 	skim::ifs::engine->ClientCmd_Unrestricted("showconsole");
-
-	return;
 }
